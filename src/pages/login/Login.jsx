@@ -1,95 +1,174 @@
-import React, { useState } from 'react'
-import { Box, Button, Chip, Drawer, Grid, Paper, Stack, TextField, Typography } from '@mui/material'
-import './Login.css'
+import React, { useState, useContext } from "react";
+import FormInput from "../../components/formInput/FormInput";
+import "../../components/formInput/formInput.css";
+import { Box, Button, Stack, Paper, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import AuthContext from "@/auth/AuthContext";
 
 const Login = () => {
-  const [user, setUser] = useState('')
-  const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
+  const [values, setValues] = useState({
+    user: "",
+    password: "",
+  });
 
-  const handleLogin=(e)=>{
+  const inputs = [
+    {
+      id: 1,
+      name: "user",
+      type: "text",
+      placeholder: "Usuario",
+      errorMessage:
+        "El nombre de usuario debe ser único, debe contener entre 3 y 16 caracteres y no usar símbolos especiales.",
+      //pattern:`^[A-Za-z0-9]{3,16}$`,
+      // pattern: `Michell01`,
+      required: true,
+    },
+    {
+      id: 2,
+      name: "password",
+      type: "password",
+      placeholder: "Contraseña",
+      errorMessage: "La contraseña debe contener letras, números y símbolos.",
+      //pattern: `^(?=.*[0-9])(?=.-[a-zA-Z])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,20}$`,
+      //pattern: `^[A-Za-z0-9]{3,16}$`,
+      // pattern: `M1ch3ll@`,
+      required: true,
+    },
+  ];
+
+  const navigate = useNavigate();
+  const { loginUser, fetchPerfil } = useContext(AuthContext);
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-    alert(`Usuario: ${user}, Contraseña: ${password}`);
-  }
+    loginUser({ username: values.user, password: values.password });
+    navigate('/')
+  };
 
-  const [formValues, setFormValues] = useState({
-    user: '',
-    email: '',
-    password: ''
-  })
-
-  const handleChange = (event) =>{
-    const {name, value} = event.target;
-    setFormValues({...formValues, [name]:value});
-  }
-
-  const handleCancel=()=>{
-  setFormValues({
-      user: '',
-      email: '',
-    password: ''
-  })
-  }
-
-/*  const handleClickShowPassword = () => setShowPassword((show) => !show)
-
-  const handleMoseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) =>{
-    event.preventDefault();
-  }*/
+  const onChange = (e) => {
+    setValues({ ...values, [e.target.name]: e.target.value });
+  };
 
   return (
     <div>
-      <Grid item xs={12} sm={8} md={5} sx={{width:"90%",height:"80vh", margin:"0 auto", mt:"10vh", display:"flex", borderRadius:5, fontFamily:"poppins"}} component={Paper} elevation={6} square>
-        <Box  className="lateral_login" sx={{width:"35%", height:"100%", borderRadius:5}}></Box>
-        <Box sx={{width:"65%", height:"100%", p:5, textAlign:"center", display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center", gap:5, fontFamily:"poppins"}}>
-        <Typography component="h5" variant="h5" sx={{fontFamily:"poppins"}}>Iniciar Sesión <i className="bi bi-lock"></i></Typography>
-        <Box component="form" noValidate sx={{width:"100%", height:"100%", display:"flex", flexDirection:"column", justifyContent:"space-between", alignItems:"center"}}>
-          <TextField 
-            variant="outlined"
-            color="success"
-            margin="normal"
-            required
-            fullWidth
-            id="user"
-            label="Usuario"
-            name="user"
-            autoComplete="user"
-            autoFocus
-            value={user}
-            onChange={(e)=> setUser(e.target.value)} />
-          <TextField 
-            variant="outlined"
-            color="success"
-            margin="normal"
-            type="password"
-            required
-            fullWidth
-            id="password"
-            label="Contraseña"
-            name="password"
-            autoComplete="current-password"
-            value={password}
-            onChange={(e)=> setPassword(e.target.value)} />
-          <Box sx={{display:"flex", justifyContent:"space-between",  width:"100%"}}>
-          <Button type="submit"
-            fullWidth
-            variant="outlined"
-            color="success"
-            onClick={handleCancel}
-            sx={{width:"40%", fontFamily:"poppins", fontWeight:700, border:2}} >Cancelar</Button>
-          <Button type="submit"
-            fullWidth
-            variant="contained"
-            color="success"
-            onClick={handleLogin}
-            sx={{width:"40%", fontFamily:"poppins"}} >Aceptar</Button>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100%",
+        }}
+      >
+        <Paper
+          className="login"
+          sx={{
+            height: "80vh",
+            display: "flex",
+            flexDirection: { xs: "column", md: "row" },
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "80%",
+            mt: "10vh",
+            p: 0,
+            borderRadius: 5,
+            position: { xs: "relative", md: "static" },
+            zIndex: 3,
+          }}
+          elevation={5}
+        >
+          <Box
+            className="img-back"
+            sx={{
+              width: { xs: "100%", md: "40%" },
+              height: { xs: "50vh", md: "100%" },
+              borderRadius: 5,
+            }}
+          />
+          <Box
+            component="form"
+            className="form-log"
+            onSubmit={handleSubmit}
+            sx={{ p: 2 }}
+          >
+            <Typography
+              variant="h4"
+              sx={{
+                color: { xs: "white", md: "black" },
+                fontSize: { xs: "28px", md: "30px" },
+                position: { xs: "absolute", md: "static" },
+                top: "20%",
+                left: "50%",
+                transform: "translate(-50%,-50%)",
+                zIndex: 50,
+                ml: 20,
+              }}
+            >
+              Autenticarme
+            </Typography>
+            <Stack
+              spacing={5}
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "100%",
+              }}
+            >
+              {inputs.map((input) => (
+                <FormInput
+                  key={input.id}
+                  {...input}
+                  value={values[input.name]}
+                  placeholder={input.placeholder}
+                  type={input.type}
+                  onChange={onChange}
+                  sx={{width: '100%', bgcolor:'red', p:3}}
+                />
+              ))}
+              <Box
+                sx={{
+                  width: "300px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Button
+                  type="button"
+                  variant="outlined"
+                  color="success"
+                  onClick={() => navigate("/")}
+                  sx={{ fontSize: { xs: "10px" } }}
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="success"
+                  onSubmit={handleSubmit}
+                  sx={{ fontSize: { xs: "10px" } }}
+                >
+                  Aceptar
+                </Button>
+              </Box>
+            </Stack>
+            <Typography sx={{ fontSize: { xs: "12px" } }}>
+              No tienes una cuenta?
+              <Typography
+              component="a"
+                onClick={() => {navigate("/register")}}
+                sx={{ color: "green", fontSize: { xs: "12px" } , cursor: "pointer" }}
+              >
+                Registrarse
+              </Typography>
+            </Typography>
           </Box>
-          <Typography sx={{fontFamily:"poppins"}}>No tienes cuenta? <Typography component="a" href="#" sx={{color:"green", fontFamily:"poppins"}} >Regístrate!</Typography></Typography>
-        </Box>
-        </Box>
-      </Grid>
+        </Paper>
+      </Box>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;

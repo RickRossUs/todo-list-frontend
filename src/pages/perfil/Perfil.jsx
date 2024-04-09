@@ -14,11 +14,12 @@ import AgregarProducto from "./AgregarProducto";
 import MenuPerfil from "./MenuPerfil";
 import Search from "./Search";
 import AuthContext from "@/auth/AuthContext";
-import Carrito from "../carrito/Carrito";
+import Productos from "../carrito/Productos";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate, useParams } from "react-router-dom";
 import perfilDefault from "@/assets/img/Perfil//png-clipart-user-profile-get-em-cardiovascular-disease-zingah-avatar-miscellaneous-white.png";
 import { CarritoProvider } from "@/context/CarritoContext";
+import { ProductosProvider } from "@/context/ProductosContext";
 import PaperCarrito from "../carrito/PaperCarrito";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
@@ -95,7 +96,7 @@ const Perfil = () => {
               onClick={() => {
                 navigate("/perfil");
               }}
-              sx={{ m:2, cursor: 'pointer' }}
+              sx={{ m: 2, cursor: "pointer" }}
             />
           )}
         </Toolbar>
@@ -169,7 +170,9 @@ const Perfil = () => {
           <Galeria productos={productos} />
         </div>
       ) : (
-        <Carrito products={productos} setProducts={setProductos} />
+        <ProductosProvider>
+          <Productos />
+        </ProductosProvider>
       )}
     </div>
   );

@@ -98,7 +98,6 @@ const PaperCarrito = () => {
               {carrito.map((product) => (
                 <ListItem
                   className="info"
-                  disablPadding
                   key={product.id}
                   sx={{ display: "flex", justifyContent: "space-between" }}
                 >

@@ -12,14 +12,14 @@ import {
   Divider,
   Button,
 } from "@mui/material";
-import "./Carrito.css";
+import "./Producto.css";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PaperCarrito from "./PaperCarrito"
 
-const HeaderCarrito = ({ allProducts, setAllProducts }) => {
+const HeaderProducto = ({ allProducts, setAllProducts }) => {
   const navigate = useNavigate();
 
   return (
@@ -69,4 +69,4 @@ const HeaderCarrito = ({ allProducts, setAllProducts }) => {
   );
 };
 
-export default HeaderCarrito;
+export default HeaderProducto;

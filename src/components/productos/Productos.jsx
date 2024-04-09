@@ -99,7 +99,7 @@ const Productos = () => {
                       borderRadius: 2,
                       cursor: "pointer",
                     }}
-                    onClick={() => {navigate('/carrito')}}
+                    onClick={() => {navigate('/productos')}}
                   >
                     Más detalles
                   </Box>
@@ -108,7 +108,7 @@ const Productos = () => {
             </Box>
             <Box
               onClick={() => {
-                navigate("/carrito");
+                navigate("/productos");
               }}
               sx={{
                 bgcolor: "lightgreen",
