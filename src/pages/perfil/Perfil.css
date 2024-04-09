@@ -1,0 +1,122 @@
+@font-face {
+  font-family: "poppins";
+  src: url(../../fonts/Poppins-Regular.ttf);
+}
+
+.portada-perfil {
+  background: url(../../assets/img/Fondos/43118830681105a4c9691da8ed8cda0e.jpeg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+body {
+  color: #b9b9b999;
+}
+
+.item_overlay {
+  transition: bottom 0.3s, opacity 0.6s;
+}
+
+.tarjeta-overlay:hover {
+  background-color: rgba(0, 0, 0, 0.498);
+}
+
+.tarjeta-overlay:hover .item_overlay {
+  bottom: 0;
+  opacity: 1;
+}
+
+.tarjeta-overlay .boton {
+  opacity: 0;
+  transition: 0.3s;
+}
+
+.tarjeta-overlay:hover .boton {
+  opacity: 1;
+}
+
+.boton-Agregar {
+  transition: 0.3s;
+}
+
+.boton-Agregar:hover {
+  background: linear-gradient(50deg,
+      rgba(42, 122, 42, 0.696),
+      rgba(135, 211, 135, 0.659));
+  border: 2px dashed green;
+  color: white;
+  color: rgb(219, 104, 104);
+}
+
+/*?======= CREAR PRODUCTO =======?*/
+.tarjeta-crear-producto {
+  background-color: rgb(183, 239, 177);
+}
+
+.form-img-add {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: green;
+  height: 35%;
+  border-radius: 21px;
+  cursor: pointer;
+}
+
+.input-img {
+  cursor: pointer;
+}
+
+.form-info-add {
+  width: 100%;
+  /* background-color: pink; */
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+select {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40%;
+  height: 5vh;
+  border-radius: 5px;
+  border: none;
+  background-color: lightgreen;
+  outline: none;
+}
+
+.select-box {
+  border: none;
+  font-family: "poppins";
+  padding: 0 5px;
+}
+
+.categoria:hover {
+  background-color: rgb(4, 88, 4);
+}
+
+.menuItem:hover {
+  background-color: red;
+}
+
+.hide-radio-button .MuiRadio-root {
+  opacity: 0;
+  position: absolute;
+}
+
+.hide-radio-button .MuiFormControlLabel-label {
+  padding: 0;
+}
+
+.css-1eed5fa-MuiInputBase-root-MuiInput-root::before,
+.css-1eed5fa-MuiInputBase-root-MuiInput-root::after {
+  border-color: white !important;
+}
+
+.ListItem:hover {
+  background: #f0f0f0;
+  cursor: pointer;
+}

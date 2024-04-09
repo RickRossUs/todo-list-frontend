@@ -1,0 +1,56 @@
+@font-face {
+  font-family: "poppins";
+  src: url(../../fonts/Poppins-Regular.ttf);
+}
+
+/* .contenedor {
+  background: url(../../assets/img/Fondos/prevencion-cancer-frutas-verduras-3.jpg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.blur {
+  backdrop-filter: blur(5px);
+  width: 100%;
+}
+
+.tarjeta {
+  backdrop-filter: blur(5px);
+  background-color: white;
+} */
+
+input,
+textarea {
+  height: 8vh;
+  resize: none;
+  border: none;
+  border-bottom: 1px solid black;
+  margin-bottom: 2px;
+  outline: none;
+  font-family: "poppins";
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: black;
+  text-align: start;
+  font-family: "poppins";
+}
+
+textarea::-webkit-scrollbar {
+  width: 5px;
+}
+textarea::-webkit-scrollbar-thumb {
+  background-color: lightgreen;
+  border-radius: 2px;
+  outline: 1px green solid;
+}
+
+.botonV {
+  margin-top: 5px;
+}
+
+.botonV:hover {
+  background-color: rgb(27, 27, 27);
+}
