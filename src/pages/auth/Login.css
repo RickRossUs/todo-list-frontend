@@ -1,0 +1,10 @@
+@font-face {
+  font-family: "poppins";
+  src: url(../../fonts/Poppins-Regular.ttf);
+}
+
+.lateral_login {
+  background-image: url(../../assets/img/Fondos/43118830681105a4c9691da8ed8cda0e.jpeg);
+  background-position: center;
+  background-size: cover;
+}

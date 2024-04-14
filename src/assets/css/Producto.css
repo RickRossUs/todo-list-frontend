@@ -1,0 +1,27 @@
+.tarjeta {
+  color: white;
+}
+.tarjeta:hover a {
+  bottom: 10%;
+  opacity: 1;
+}
+
+@font-face {
+  font-family: "poppins";
+  src: url(../../fonts/Poppins-Regular.ttf);
+  color: #88d488aa;
+}
+
+.lista-compras.hidden,
+.lista-fav.hidden,
+.bi-x-lg.hidden {
+  display: none;
+}
+
+.lista-compras::-webkit-scrollbar {
+  width: 5px;
+}
+
+.btn-cart:hover {
+  outline: 1px solid grey;
+}

@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
-import AuthContext from "../auth/AuthContext";
+import AuthContext from "./AuthContext";
 
 const CarritoContext = createContext();
 
@@ -8,7 +8,7 @@ export default CarritoContext;
 export const CarritoProvider = ({ children }) => {
   const { authTokens, logoutUser } = useContext(AuthContext);
   const [carrito, setCarrito] = useState([]);
-  const URL = "http://127.0.0.1:8000/productos/compra/";
+  const URL = import.meta.env.VITE_APP_API_URL + "/productos/compra/";
 
   const getCarrito = async () => {
     const response = await fetch(URL, {

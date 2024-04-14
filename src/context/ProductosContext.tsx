@@ -1,5 +1,15 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
-import AuthContext from "../auth/AuthContext";
+import AuthContext from "./AuthContext";
+import { useLocation } from "react-router-dom";
+import {
+  fetchGetProductos,
+  fetchGetProducto,
+  fetchGetCategorias,
+  fetchFilterProductosByCategoria,
+  fetchPostProducto,
+  fetchUpdateProducto,
+  fetchEliminarProducto,
+} from "@/services/ProductosService";
 
 const ProductosContext = createContext();
 
@@ -10,109 +20,65 @@ export const ProductosProvider = ({ children }) => {
   const [productos, setProductos] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [selectedCategoria, setSelectedCategoria] = useState(0);
+  const location = useLocation();
+  const URL = import.meta.env.VITE_APP_API_URL + "/productos/";
 
-  const getProductos = async () => {
-    let response = await fetch("http://127.0.0.1:8000/productos/", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + String(authTokens.access),
-      },
-    });
-    let data = await response.json();
+  const getProductos = async (search) => {
+    let response = await fetchGetProductos(search, authTokens.access);
 
-    if (data) {
-      setProductos(data);
+    if (response) {
+      setProductos(response.results);
       setSelectedCategoria(0);
     } else if (response.statusText === "Unauthorized") {
       logoutUser();
     }
   };
 
+  const getProducto = async (productId) => {
+    try {
+      const response = await fetchGetProducto(productId, authTokens.access)
+      return response;
+    } catch (error) {
+      console.error("Error al obtener el producto:", error);
+    }
+  };
+
   const getCategorias = async () => {
     try {
-      const URL = "http://127.0.0.1:8000/productos/categorias/";
-
-      const response = await fetch(URL, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
-
-      const data = await response.json();
-      setCategorias(data);
+      const response = await fetchGetCategorias()
+      setCategorias(response);
     } catch (error) {
       console.error("Error fetching productos:", error);
     }
   };
 
-  const filterProductos = async (searchParam) => {
-    let response = await fetch("http://127.0.0.1:8000/productos/" + searchParam, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + String(authTokens.access),
-      },
-    });
-    let data = await response.json();
-    if (response.status === 200) {
-      setProductos(data);
-    }
+  const filterProductosByCategoria = async (categoriaId, usuarioId) => {
+    let response = await fetchFilterProductosByCategoria(categoriaId, usuarioId, authTokens.access)
+    setProductos(response);
+    setSelectedCategoria(categoriaId);
   };
-  const filterProductosByCategoria = async (categoriaId) => {
-    let response = await fetch("http://127.0.0.1:8000/productos/?categoria=" + categoriaId, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + String(authTokens.access),
-      },
-    });
-    let data = await response.json();
-    if (response.status === 200) {
-      setProductos(data);
-      setSelectedCategoria(categoriaId);
+
+  const postProducto = async (formData) => {
+    const response = await fetchPostProducto(formData, authTokens.access)
+    if(response) {
+      getProductos();
     }
   };
 
-  const myProductos = async (searchParam) => {
-    let response = await fetch("http://127.0.0.1:8000/productos/myProductos/", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + String(authTokens.access),
-      },
-    });
-    let data = await response.json();
-    if (response.status === 200) {
-      setProductos(data);
-    } else if (response.statusText === "Unauthorized") {
-      logoutUser();
+  const updateProducto = async (formData, productId) => {
+    const response = await fetchUpdateProducto(formData, productId, authTokens.access)
+    console.log(response);
+    if(response.status === 200) {
+      getProductos();
     }
   };
 
-  const postProducto = async (Producto) => {
-    const response = await fetch("http://127.0.0.1:8000/productos/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + String(authTokens.access),
-      },
-      body: JSON.stringify(Producto),
-    });
-    const newTicket = await response.json();
-    setProductos(newTicket);
-  };
-
-  const deleteProducto = async (id) => {
-    const response = await fetch("http://127.0.0.1:8000/productos/", {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + String(authTokens.access),
-      },
-      body: JSON.stringify(id),
-    });
-    const newTicket = await response.json();
-    setProductos(newTicket);
+  const eliminarProducto = async (productId) => {
+    const response = await fetchEliminarProducto(productId, authTokens.access)
+    const productosActualizados = productos?.filter(
+      (producto) => producto.id !== productId
+    );
+    setProductos(productosActualizados);
   };
 
   const value = {
@@ -122,20 +88,24 @@ export const ProductosProvider = ({ children }) => {
     selectedCategoria: selectedCategoria,
     setSelectedCategoria: setSelectedCategoria,
     getProductos: getProductos,
+    getProducto: getProducto,
     getCategorias: getCategorias,
-    filterProductos: filterProductos,
     filterProductosByCategoria: filterProductosByCategoria,
-    myProductos: myProductos,
     postProducto: postProducto,
-    deleteProducto: deleteProducto,
+    updateProducto: updateProducto,
+    eliminarProducto: eliminarProducto,
   };
 
   useEffect(() => {
-    getProductos();
-    getCategorias()
+    if (location.pathname === "/productos") {
+      getProductos();
+    }
+    getCategorias();
   }, []);
 
   return (
-    <ProductosContext.Provider value={value}>{children}</ProductosContext.Provider>
+    <ProductosContext.Provider value={value}>
+      {children}
+    </ProductosContext.Provider>
   );
 };
