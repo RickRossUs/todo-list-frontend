@@ -18,11 +18,11 @@ import AuthContext from "@/context/AuthContext";
 import UsuarioContext from "@/context/UsuarioContext";
 import { useNavigate, useParams } from "react-router-dom";
 import perfilDefault from "@/assets/img/Perfil//png-clipart-user-profile-get-em-cardiovascular-disease-zingah-avatar-miscellaneous-white.png";
-import circular from "@/assets/img/Perfil/IMG_20231204_072236_447.jpg";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ProductosContext from "@/context/ProductosContext";
-import { getImageSrc } from '@/helpers/imageHelper';
+import { getImageSrc } from "@/helpers/imageHelper";
+import { fetchGetPerfil } from "@/services/UsuariosService";
 
 const Perfil = () => {
   const { authTokens } = useContext(AuthContext);
@@ -34,21 +34,13 @@ const Perfil = () => {
 
   useEffect(() => {
     const getUsuario = async () => {
-      const response = await fetch(
-        "http://127.0.0.1:8000/usuarios/" + userId + "/",
-        {
-          method: "GET",
-          headers: {
-            Authorization: "Bearer " + String(authTokens.access),
-          },
-        }
-      );
-      const data = await response.json();
-      if (data) {
-        setUsuario(data);
-        setProductos(data?.productos);
+      const response = await fetchGetPerfil(userId)
+      if (response) {
+        setUsuario(JSON.parse(response));
+        setProductos(JSON.parse(response).productos);
       }
     };
+    
     if (userId) {
       getUsuario();
     } else {
@@ -159,14 +151,14 @@ const Perfil = () => {
         </Typography>
       </Box>
 
-        {userId === undefined ? (
-          <div>
-            <AgregarProducto />
-            <Galeria />
-          </div>
-        ) : (
-          <Productos />
-        )}
+      {userId === undefined ? (
+        <div>
+          <AgregarProducto />
+          <Galeria />
+        </div>
+      ) : (
+        <Productos />
+      )}
     </div>
   );
 };

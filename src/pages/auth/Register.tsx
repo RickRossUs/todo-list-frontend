@@ -4,10 +4,12 @@ import { useForm, Controller } from "react-hook-form";
 import "./Register.css";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "@/context/AuthContext";
+import UsuarioContext from "@/context/UsuarioContext";
 
 const Register = () => {
   const navigate = useNavigate();
-  const { registerUser, loginUsuario } = useContext(AuthContext);
+  const { loginUsuario } = useContext(AuthContext);
+  const { registerUser } = useContext(UsuarioContext);
 
   const {
     register,
@@ -22,10 +24,8 @@ const Register = () => {
 
   const createUser = async (data) => {
     const register = await registerUser(data);
-    alert("Register: "+register+' Username: '+data.username + ' Password: '+data.password)
     if (register) {
       const login = await loginUsuario({ username: data.username, password: data.password });
-      alert("Login: "+login)
       if (login) {
         navigate("/detalles-perfil");
       }

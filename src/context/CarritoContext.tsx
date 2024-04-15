@@ -1,48 +1,37 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
-import AuthContext from "./AuthContext";
+import {
+  fetchGetCarrito,
+  fetchPostCarrito,
+  fetchPatchCarrito,
+  fetchDeleteCarrito,
+} from "@/services/CarritoService";
 
 const CarritoContext = createContext();
 
 export default CarritoContext;
 
 export const CarritoProvider = ({ children }) => {
-  const { authTokens, logoutUser } = useContext(AuthContext);
   const [carrito, setCarrito] = useState([]);
-  const URL = import.meta.env.VITE_APP_API_URL + "/productos/compra/";
 
   const getCarrito = async () => {
-    const response = await fetch(URL, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + String(authTokens?.access),
-      },
-    });
-    const data = await response.json();
-
-    if (response.status === 200) {
-      setCarrito(data);
-    }
+    const response = await fetchGetCarrito();
+    setCarrito(JSON.parse(response));
   };
 
   const buyCarrito = async (productoId: number) => {
-    const existingItem = carrito.find((item) => item.producto.id === productoId);
+    const existingItem = carrito.find(
+      (item) => item.producto.id === productoId
+    );
 
     if (existingItem) {
-      // If the product exists, call plusCarrito to increase the quantity
       await plusCarrito(existingItem.id, true);
     } else {
-      const response = await fetch(URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + String(authTokens.access),
-        },
-        body: JSON.stringify({ producto: productoId, cantidad: 1 }),
+      const response = await fetchPostCarrito({
+        producto: productoId,
+        cantidad: 1,
       });
 
-      const newItem = await response.json(); // Assuming the server responds with the item details
-      setCarrito([...carrito, newItem]);
+      setCarrito([...carrito, JSON.parse(response)]);
     }
   };
 
@@ -52,40 +41,23 @@ export const CarritoProvider = ({ children }) => {
     if (itemIndex !== -1) {
       const updatedItem = {
         ...carrito[itemIndex],
-        cantidad: plus
-          ? carrito[itemIndex].cantidad + 1
-          : carrito[itemIndex].cantidad - 1,
+        cantidad: carrito[itemIndex].cantidad + (plus ? 1 : -1),
       };
 
-      const updatedCarrito = [...carrito];
-      updatedCarrito[itemIndex] = updatedItem;
-      setCarrito(updatedCarrito);
+      setCarrito(
+        carrito.map((item, index) => (index === itemIndex ? updatedItem : item))
+      );
 
       if (updatedItem.cantidad === 0) {
         removeFromCarrito(carritoId);
       } else {
-        const response = await fetch(URL + carritoId + "/", {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + String(authTokens.access),
-          },
-          body: JSON.stringify({
-            cantidad: updatedItem.cantidad,
-          }),
-        });
+        await fetchPatchCarrito(carritoId, { cantidad: updatedItem.cantidad });
       }
     }
   };
 
   const removeFromCarrito = async (carritoId: number) => {
-    const response = await fetch(URL + carritoId + "/", {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + String(authTokens.access),
-      },
-    });
+    const response = await fetchDeleteCarrito(carritoId);
     setCarrito((prevCarrito) =>
       prevCarrito.filter((item) => item.id !== carritoId)
     );

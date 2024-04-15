@@ -1,81 +1,75 @@
 import axios from "axios";
 
-const URL = import.meta.env.VITE_APP_API_URL + "/productos/";
+const axiosProductos = axios.create({
+  baseURL: import.meta.env.VITE_APP_API_URL + "/productos/",
+  headers: {
+    Authorization:
+      "Bearer " + String(JSON.parse(localStorage.getItem("authTokens"))?.access),
+  },
+});
 
-axios.interceptors.response.use(
+axiosProductos.interceptors.response.use(
   function (response) {
-    return response.data;
+    return JSON.stringify(response.data) || JSON.stringify(response);
   },
   function (error) {
+    alert(error);
     return Promise.reject(error);
   }
 );
 
-export const fetchGetProductos = (search, authTokens) => {
-  return axios.get(
-    URL + "?nombre=" + (search !== undefined ? search : "") + "&limit=20",
+export const fetchGetProductos = (search) => {
+  return axiosProductos.get(
+    "?nombre=" + (search !== undefined ? search : "") + "&limit=20",
     {
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer " + String(authTokens),
       },
     }
   );
 };
 
-export const fetchGetProducto = (productId, authTokens) => {
-  return axios.get(URL + productId + "/", {
+export const fetchGetProducto = (productId) => {
+  return axiosProductos.get(productId + "/", {
     headers: {
-      Authorization: "Bearer " + String(authTokens),
+      "Content-Type": "application/json",
     },
   });
 };
 
 export const fetchGetCategorias = () => {
-  return axios.get(URL + "categorias/", {
-    headers: { "Content-Type": "application/json" },
+  return axiosProductos.get("categorias/", {
+    headers: {
+      "Content-Type": "application/json",
+    },
   });
 };
 
-export const fetchFilterProductosByCategoria = (
-  categoriaId,
-  usuarioId,
-  authTokens
-) => {
-  return axios.get(
-    URL +
-      "?categoria=" +
+export const fetchFilterProductosByCategoria = (categoriaId, usuarioId) => {
+  return axiosProductos.get(
+    "?categoria=" +
       (categoriaId === 0 ? "" : categoriaId) +
       (location.pathname === "/productos" ? "" : "&usuario=" + usuarioId),
     {
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer " + String(authTokens),
       },
     }
   );
 };
 
-export const fetchPostProducto = (formData, authTokens) => {
-  return axios.post(URL, formData, {
-    headers: {
-      Authorization: "Bearer " + String(authTokens),
-    },
-  });
+export const fetchPostProducto = (formData) => {
+  return axiosProductos.post("", formData);
 };
 
-export const fetchUpdateProducto = (formData, productId, authTokens) => {
-  return axios.put(URL + productId + "/", formData, {
-    headers: {
-      Authorization: "Bearer " + String(authTokens),
-    },
-  });
+export const fetchUpdateProducto = (formData, productId) => {
+  return axiosProductos.put(productId + "/", formData);
 };
 
-export const fetchEliminarProducto = (productId, authTokens) => {
-  return axios.delete(URL + productId + "/", {
+export const fetchEliminarProducto = (productId) => {
+  return axiosProductos.delete(productId + "/", {
     headers: {
-      Authorization: "Bearer " + String(authTokens),
+      "Content-Type": "application/json",
     },
   });
 };

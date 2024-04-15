@@ -10,6 +10,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import AuthContext from "@/context/AuthContext";
 import UsuarioContext from "@/context/UsuarioContext";
+import Loading from "@/components/snipper/loading";
 import "./Login.css";
 
 const Login = () => {
@@ -41,19 +42,27 @@ const Login = () => {
   const navigate = useNavigate();
   const { loginUsuario } = useContext(AuthContext);
   const { getPerfil } = useContext(UsuarioContext);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); 
-    const token = await loginUsuario({
-      username: values.Usuario,
-      password: values.Contraseña,
-    });
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      const token = await loginUsuario({
+        username: values.Usuario,
+        password: values.Contraseña,
+      });
 
-    if (token) {
-      getPerfil();
-      navigate("/");
-    } else {
-      console.error("Error al autenticar al usuario");
+      if (token) {
+        getPerfil();
+        navigate("/");
+      } else {
+        console.error("Error al autenticar al usuario");
+      }
+    } catch (error) {
+      console.error("Error al autenticar al usuario:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -63,6 +72,7 @@ const Login = () => {
 
   return (
     <div>
+      {isLoading && <Loading />}
       <Box
         sx={{
           display: "flex",

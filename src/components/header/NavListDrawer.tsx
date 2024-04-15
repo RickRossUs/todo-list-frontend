@@ -48,7 +48,6 @@ const NavListDrawer = ({ onLinkClick }) => {
   const navigate = useNavigate();
   const { authTokens } = useContext(AuthContext);
   const { user } = useContext(UsuarioContext);
-  console.log(user?.imagen)
 
   return (
     <div>

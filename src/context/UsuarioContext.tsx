@@ -1,6 +1,12 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
+import {
+  fetchGetMyPerfil,
+  fetchUpdatePerfil,
+  fetchRegisterUsuario,
+  fetchDeleteUsuario,
+} from "@/services/UsuariosService";
 
 const UsuarioContext = createContext();
 
@@ -9,43 +15,17 @@ export default UsuarioContext;
 export const UsuarioProvider = ({ children }) => {
   let [user, setUser] = useState(null);
   const navigate = useNavigate();
-  const URL = import.meta.env.VITE_APP_API_URL + "/usuarios/";
-  
-  const getPerfil = async () => {
-    const authTokens = JSON.parse(localStorage.getItem("authTokens"));
-    try {
-      const response = await fetch(URL + "self/", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + authTokens?.access,
-        },
-      });
-      const data = await response.json();
 
-      if (data) {
-        setUser(data);
-      } else {
-        console.error("Error al eliminar el usuario:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Error fetching products:", error);
-    }
+  const getPerfil = async () => {
+    const response = await fetchGetMyPerfil();
+    setUser(JSON.parse(response));
   };
 
-  let registerUser = async (usuario) => {
-    const response = await fetch(URL + "/usuarios/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(usuario),
-    });
+  const registerUser = async (usuario) => {
+    const response = await fetchRegisterUsuario(usuario)
 
-    let data = await response.json();
-
-    if (data) {
-      setUser(data);
+    if (response) {
+      setUser(JSON.parse(response));
       return true;
     } else {
       alert("Something went wrong while logging in the user!");
@@ -53,33 +33,20 @@ export const UsuarioProvider = ({ children }) => {
     return false;
   };
 
-  const updateUser = async (formData, token) => {
-    const authTokens = JSON.parse(localStorage.getItem("authTokens"));
-    const response = await fetch(URL + "/usuarios/" + user.id + "/", {
-      method: "PATCH",
-      headers: {
-        Authorization: "Bearer " + authTokens.access,
-      },
-      body: formData,
-    });
-    let data = await response.json();
+  const updateUser = async (formData) => {
+    const response = await fetchUpdatePerfil(user.id, formData)
 
-    if (data) {
-      setUser(data);
+    if (response) {
+      setUser(JSON.parse(response));
       navigate("/perfil");
     } else {
       console.error("Error al eliminar el usuario:", response.statusText);
     }
   };
 
-  const deleteUser = async (token) => {
-    const authTokens = JSON.parse(localStorage.getItem("authTokens"));
-    const response = await fetch(URL + "/usuarios/" + user.id + "/", {
-      method: "DELETE",
-      headers: {
-        Authorization: "Bearer " + authTokens.access,
-      },
-    });
+  const deleteUser = async () => {
+    const response = await fetchDeleteUsuario(user.id)
+    return response
   };
 
   let contextData = {

@@ -57,9 +57,6 @@ const CrearPerfil = () => {
   };
 
   useEffect(() => {
-    if (!user) {
-      setUser(JSON.parse(localStorage.getItem("user")));
-    }
     setValue("username", user?.username);
     setValue("email", user?.email);
     setValue("first_name", user?.first_name);
@@ -70,7 +67,6 @@ const CrearPerfil = () => {
     setValue("casa", user?.direccion?.casa);
     if (user?.imagen) {
       setImage(user?.imagen);
-      // setFileName("");
     }
   }, [user, setValue, setUser]);
 

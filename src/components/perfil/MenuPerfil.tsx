@@ -20,6 +20,13 @@ const MenuPerfil = () => {
     setAnchorEl(null);
   };
 
+  const handleDelete = async () => {
+    const response = await deleteUser()
+    if (response) {
+      logoutUsuario()
+    }
+  }
+
   return (
     <div>
       <Box sx={{ position: "relative" }}>
@@ -48,7 +55,7 @@ const MenuPerfil = () => {
             Cerrar Sesión
           </MenuItem>
           <Divider />
-          <MenuItem className="menuItem item-del" onClick={() => {deleteUser()}}>
+          <MenuItem className="menuItem item-del" onClick={() => {handleDelete()}}>
             <Box component="i" mr={2}></Box> Eliminar
             Perfil
           </MenuItem>

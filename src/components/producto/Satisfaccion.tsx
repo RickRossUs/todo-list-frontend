@@ -1,74 +1,30 @@
 import { useEffect, useState, useContext } from "react";
 import { Rating } from "@mui/material";
 import AuthContext from "@/context/AuthContext";
+import {
+  fetchGetSatisfacciones,
+  fetchPostSatisfaccion,
+  fetchPatchSatisfaccion,
+  fetchDeleteSatisfaccion,
+} from "@/services/SatisfaccionesService";
 
 const Satisfaccion = ({ value, productoId }) => {
-  const { authTokens } = useContext(AuthContext);
-  const URL = import.meta.env.VITE_APP_API_URL + "/productos/satisfacciones/";
-
-  const getSatisfacciones = async () => {
-    const response = await fetch(URL, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + String(authTokens.access),
-      },
-    });
-    const data = await response.json();
-    return data;
-  };
-
-  const agregarSatisfaccion = async (calificacion) => {
-    const response = await fetch(URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + String(authTokens.access),
-      },
-      body: JSON.stringify({ producto: productoId, calificacion: calificacion }),
-    });
-  };
-
-  const modificarSatisfaccion = async (id, calificacion) => {
-    const response = await fetch(URL + id + "/", {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + String(authTokens.access),
-      },
-      body: JSON.stringify({ calificacion: calificacion }),
-    });
-  };
-
-  const eliminarSatisfaccion = async (id) => {
-    const response = await fetch(URL + id + "/", {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + String(authTokens.access),
-      },
-    });
-  };
-
   const handleSatisfaccion = async (event, newValue) => {
-    if (newValue === 0) {
-      const satisfacciones = await getSatisfacciones();
-      const satisfaccionToDelete = satisfacciones.find(
+    try {
+      const satisfacciones = await fetchGetSatisfacciones();
+      const satisfaccionExistente = satisfacciones.find(
         (item) => item.producto.id === productoId
       );
-      if (satisfaccionToDelete) {
-        await eliminarSatisfaccion(satisfaccionToDelete.id);
+
+      if (newValue === 0 && satisfaccionExistente) {
+        await fetchDeleteSatisfaccion(satisfaccionExistente.id);
+      } else if (newValue !== 0 && !satisfaccionExistente) {
+        await fetchPostSatisfaccion(productoId, newValue);
+      } else if (newValue !== 0 && satisfaccionExistente) {
+        await fetchPatchSatisfaccion(satisfaccionExistente.id, newValue);
       }
-    } else {
-      const satisfacciones = await getSatisfacciones();
-      const existe = satisfacciones.find(
-        (item) => item.producto.id === productoId
-      );
-      if (existe) {
-        await modificarSatisfaccion(existe.id, newValue);
-      } else {
-        await agregarSatisfaccion(newValue);
-      }
+    } catch (error) {
+      console.error("Error manejando la satisfacción:", error);
     }
   };
 

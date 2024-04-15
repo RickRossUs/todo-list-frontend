@@ -1,5 +1,4 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
-import AuthContext from "./AuthContext";
 import { useLocation } from "react-router-dom";
 import {
   fetchGetProductos,
@@ -16,84 +15,95 @@ const ProductosContext = createContext();
 export default ProductosContext;
 
 export const ProductosProvider = ({ children }) => {
-  const { authTokens, logoutUser } = useContext(AuthContext);
   const [productos, setProductos] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [selectedCategoria, setSelectedCategoria] = useState(0);
   const location = useLocation();
-  const URL = import.meta.env.VITE_APP_API_URL + "/productos/";
 
   const getProductos = async (search) => {
-    let response = await fetchGetProductos(search, authTokens.access);
-
-    if (response) {
-      setProductos(response.results);
-      setSelectedCategoria(0);
-    } else if (response.statusText === "Unauthorized") {
-      logoutUser();
-    }
+    let response = await fetchGetProductos(search);
+    setProductos(JSON.parse(response).results);
+    setSelectedCategoria(0);
   };
 
   const getProducto = async (productId) => {
     try {
-      const response = await fetchGetProducto(productId, authTokens.access)
-      return response;
+      const response = await fetchGetProducto(productId);
+      return JSON.parse(response);
     } catch (error) {
       console.error("Error al obtener el producto:", error);
     }
   };
 
   const getCategorias = async () => {
-    try {
-      const response = await fetchGetCategorias()
-      setCategorias(response);
-    } catch (error) {
-      console.error("Error fetching productos:", error);
-    }
+    const response = await fetchGetCategorias();
+    setCategorias(JSON.parse(response));
   };
 
   const filterProductosByCategoria = async (categoriaId, usuarioId) => {
-    let response = await fetchFilterProductosByCategoria(categoriaId, usuarioId, authTokens.access)
-    setProductos(response);
+    let response = await fetchFilterProductosByCategoria(
+      categoriaId,
+      usuarioId
+    );
+    setProductos(JSON.parse(response));
     setSelectedCategoria(categoriaId);
   };
 
   const postProducto = async (formData) => {
-    const response = await fetchPostProducto(formData, authTokens.access)
-    if(response) {
+    const response = await fetchPostProducto(formData);
+    if (response) {
       getProductos();
     }
   };
 
   const updateProducto = async (formData, productId) => {
-    const response = await fetchUpdateProducto(formData, productId, authTokens.access)
-    console.log(response);
-    if(response.status === 200) {
+    const response = await fetchUpdateProducto(
+      formData,
+      productId,
+    );
+    if (response) {
       getProductos();
     }
   };
 
   const eliminarProducto = async (productId) => {
-    const response = await fetchEliminarProducto(productId, authTokens.access)
+    const response = await fetchEliminarProducto(productId);
     const productosActualizados = productos?.filter(
       (producto) => producto.id !== productId
     );
     setProductos(productosActualizados);
   };
 
+  const toggleFavorito = (productoId, favoritoId, isFavorito) => {
+    setProductos((prevProductos) =>
+      prevProductos.map((producto) =>
+        producto.id === productoId
+          ? {
+              ...producto,
+              es_favorito: {
+                is: isFavorito,
+                id: favoritoId,
+              },
+            }
+          : producto
+      )
+    );
+  };
+
   const value = {
-    productos: productos,
-    setProductos: setProductos,
-    categorias: categorias,
-    selectedCategoria: selectedCategoria,
-    setSelectedCategoria: setSelectedCategoria,
-    getProductos: getProductos,
-    getProducto: getProducto,
-    getCategorias: getCategorias,
-    filterProductosByCategoria: filterProductosByCategoria,
-    postProducto: postProducto,
-    updateProducto: updateProducto,
-    eliminarProducto: eliminarProducto,
+    productos,
+    setProductos,
+    categorias,
+    selectedCategoria,
+    setSelectedCategoria,
+    getProductos,
+    getProducto,
+    getCategorias,
+    filterProductosByCategoria,
+    postProducto,
+    updateProducto,
+    eliminarProducto,
+    toggleFavorito,
   };
 
   useEffect(() => {

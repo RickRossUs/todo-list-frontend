@@ -1,25 +1,28 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchLogin, fetchUpdateToken, fetchLogout } from "@/services/AuthService";
+import {
+  fetchLogin,
+  fetchUpdateToken,
+  fetchLogout,
+} from "@/services/AuthService";
 
 const AuthContext = createContext();
 
 export default AuthContext;
 
 export const AuthProvider = ({ children }) => {
-  const [authTokens, setAuthTokens] = useState(() =>
-    localStorage.getItem("authTokens")
-      ? JSON.parse(localStorage.getItem("authTokens"))
-      : null
+  const [authTokens, setAuthTokens] = useState(
+    () => JSON.parse(localStorage.getItem("authTokens")) || null
   );
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   const loginUsuario = async (credentials) => {
-    const token = await fetchLogin(credentials);
-    localStorage.setItem("authTokens", token);
-    setAuthTokens(token);
-    return token;
+    const response = await fetchLogin(credentials);
+    const data = JSON.parse(response);
+    localStorage.setItem("authTokens", JSON.stringify(data.token));
+    setAuthTokens(data.token);
+    return data.token;
   };
 
   const logoutUsuario = () => {
@@ -28,7 +31,7 @@ export const AuthProvider = ({ children }) => {
     navigate("/");
   };
 
-  let contextData = {
+  const contextData = {
     authTokens: authTokens,
     loginUsuario: loginUsuario,
     logoutUsuario: logoutUsuario,
@@ -36,9 +39,9 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const loadUserFromStorage = async () => {
-      const tokens = localStorage.getItem("authTokens");
+      const tokens = JSON.parse(localStorage.getItem("authTokens"));
       if (tokens) {
-        setAuthTokens(JSON.parse(tokens));
+        setAuthTokens(tokens);
         await fetchUpdateToken(tokens.refresh);
       }
       setLoading(false);

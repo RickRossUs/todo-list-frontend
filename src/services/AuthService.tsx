@@ -1,42 +1,29 @@
 import axios from "axios";
 
-const URL = import.meta.env.VITE_APP_API_URL + "/auth/";
+const axiosAuth = axios.create({
+  baseURL: import.meta.env.VITE_APP_API_URL + "/auth/",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+axiosAuth.interceptors.response.use(
+  function (response) {
+    return JSON.stringify(response.data);
+  },
+  function (error) {
+    return Promise.reject(error);
+  }
+);
 
 export const fetchLogin = (credentials) => {
-  return axios
-    .post(URL + "login", credentials, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-    .then((response) => {
-      return JSON.stringify(response.token);
-    })
-    .catch((error) => {
-      throw new Error(`Error de autenticación: ${error.message}`);
-    });
+  return axiosAuth.post("login", credentials);
 };
 
 export const fetchUpdateToken = (refreshToken) => {
-  return axios
-    .post(
-      URL + "token/refresh/",
-      {
-        refresh: refreshToken,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    )
-    .then((response) => {
-      alert(response.data);
-      return response.data;
-    })
-    .catch((error) => {
-      throw new Error("Error al actualizar el token: " + error.message);
-    });
+  return axiosAuth.post("token/refresh/", {
+    refresh: refreshToken,
+  });
 };
 
 export const fetchLogout = () => {
