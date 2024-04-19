@@ -2,7 +2,7 @@ import { useEffect, useContext, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import "@/assets/css/Producto.css";
 import { useNavigate } from "react-router-dom";
-
+import { fetchGetProductos } from "@/services/ProductosService";
 const ProductosMasVendidos = () => {
   const navigate = useNavigate();
   const [productos, setProductos] = useState([]);
@@ -10,17 +10,9 @@ const ProductosMasVendidos = () => {
   useEffect(() => {
     const fetchUsuario = async () => {
       try {
-        const URL = "http://127.0.0.1:8000/productos/?limit=5";
+        const response = await fetchGetProductos("", 5)
 
-        const response = await fetch(URL, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        const data = await response.json();
-
-        setProductos(data.results);
+        setProductos(JSON.parse(response).results);
       } catch (error) {
         console.error("Error fetching products:", error);
       }
@@ -99,7 +91,9 @@ const ProductosMasVendidos = () => {
                       borderRadius: 2,
                       cursor: "pointer",
                     }}
-                    onClick={() => {navigate('/productos')}}
+                    onClick={() => {
+                      navigate("/productos");
+                    }}
                   >
                     Más detalles
                   </Box>

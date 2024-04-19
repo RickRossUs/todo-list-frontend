@@ -1,11 +1,15 @@
 import { useState, useEffect, useContext } from "react";
-import { Box, Button, Paper, TextField, Typography } from "@mui/material";
-import { useForm, Controller } from "react-hook-form";
+import { Box, Button, Paper, Typography } from "@mui/material";
+import { useForm } from "react-hook-form";
 import AuthContext from "@/context/AuthContext";
 import UsuarioContext from "@/context/UsuarioContext";
 import { useNavigate } from "react-router-dom";
 import "@/assets/css/Perfil.css";
-import { getImageSrc } from '@/helpers/imageHelper';
+import ImageUploader from "@/components/form/ImageUploader";
+import InputField from "@/components/form/CInputField";
+import { fetchDireccion } from "@/services/UsuariosService";
+import { UsuarioInformacion } from "@/forms/UsuarioInformacion";
+import { DireccionInformacion } from "@/forms/DireccionInformacion";
 
 const CrearPerfil = () => {
   const [imagen, setImage] = useState(null);
@@ -32,17 +36,7 @@ const CrearPerfil = () => {
       ...(data?.casa ? { casa: data.casa } : {}),
     };
 
-    const response = await fetch(
-      "http://127.0.0.1:8000/usuarios/direccion/" + user?.direccion?.id + "/",
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + String(authTokens.access),
-        },
-        body: JSON.stringify(direccion),
-      }
-    );
+    fetchDireccion(user?.direccion?.id, direccion);
 
     formData.append("username", data?.username);
     formData.append("email", data?.email);
@@ -86,59 +80,14 @@ const CrearPerfil = () => {
           sx={{ minWidth: "50%", borderRadius: "10px", p: 2 }}
           onSubmit={handleSubmit(updateUsuario)}
         >
-          <form
-            className="form-img-add"
-            onClick={() => document.querySelector(".input-img").click()}
-            onChange={({ target: { files } }) => {
-              files[0] && setFileName(files[0].name);
-              if (files) {
-                setImage(URL.createObjectURL(files[0]));
-              }
-            }}
-          >
-            <input
-              type="file"
-              accept="image/*"
-              required
-              className="input-img"
-              hidden
-              {...register("imagen", {})}
-              error={!!errors.imagen}
-              helperText={errors.imagen?.message}
-            />
-            {imagen ? (
-              <Box
-                component="img"
-                src={getImageSrc(imagen)}
-                sx={{
-                  width: "100%",
-                  height: "250px",
-                  objectFit: "cover",
-                  borderRadius: { xs: 2, md: 5 },
-                  position: "relative",
-                }}
-                alt={fileName}
-              />
-            ) : (
-              <>
-                <Box
-                  component="i"
-                  color="white"
-                  fontSize={40}
-                  sx={{
-                    height: "250px",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <Typography sx={{ fontFamily: "poppins", color: "white" }}>
-                    Subir una imagen..
-                  </Typography>
-                </Box>
-              </>
-            )}
-          </form>
+          <ImageUploader
+            imagen={imagen}
+            fileName={fileName}
+            setFileName={setFileName}
+            setImage={setImage}
+            register={register}
+            errors={errors}
+          />
           <Box
             component="form"
             sx={{
@@ -157,86 +106,16 @@ const CrearPerfil = () => {
                 gap: 2,
               }}
             >
-              <Controller
-                name="username"
-                control={control}
-                defaultValue=""
-                rules={{
-                  required: "Nombre es requerido",
-                  validate: (value) =>
-                    (value && value.length > 5) ||
-                    "Debe contener más de 6 caracteres",
-                }}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Nombre de usuario"
-                    type="text"
-                    size="small"
-                    color="success"
-                    error={!!errors.username}
-                    helperText={errors.username?.message}
-                  />
-                )}
-              />
-              <Controller
-                name="email"
-                control={control}
-                defaultValue=""
-                rules={{
-                  required: "Correo es requerido",
-                  pattern: {
-                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-                    message: "Correo no válido",
-                  },
-                }}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Correo"
-                    type="email"
-                    size="small"
-                    color="success"
-                    error={!!errors.email}
-                    helperText={errors.email?.message}
-                  />
-                )}
-              />
-              <Controller
-                name="first_name"
-                control={control}
-                defaultValue=""
-                rules={{}}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Nombre"
-                    type="text"
-                    size="small"
-                    color="success"
-                    error={!!errors.nombre}
-                    helperText={errors.nombre?.message}
-                  />
-                )}
-              />
-
-              <Controller
-                name="last_name"
-                control={control}
-                defaultValue=""
-                rules={{}}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Apellidos"
-                    type="text"
-                    size="small"
-                    color="success"
-                    error={!!errors.apellidos}
-                    helperText={errors.apellidos?.message}
-                  />
-                )}
-              />
+              {UsuarioInformacion.map((field) => (
+                <InputField
+                  key={field.name}
+                  name={field.name}
+                  control={control}
+                  label={field.label}
+                  rules={field.rules}
+                  errors={errors}
+                />
+              ))}
             </Box>
             <Box
               component="fieldset"
@@ -254,65 +133,15 @@ const CrearPerfil = () => {
               <Typography component="legend" sx={{ fontFamily: "poppins" }}>
                 Dirección
               </Typography>
-              <Controller
-                name="provincia"
-                control={control}
-                defaultValue=""
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Provincia"
-                    variant="outlined"
-                    size="small"
-                    color="success"
-                  />
-                )}
-              />
-
-              <Controller
-                name="municipio"
-                control={control}
-                defaultValue=""
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Municipio"
-                    variant="outlined"
-                    size="small"
-                    color="success"
-                  />
-                )}
-              />
-
-              <Controller
-                name="calle"
-                control={control}
-                defaultValue=""
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Calle"
-                    variant="outlined"
-                    size="small"
-                    color="success"
-                  />
-                )}
-              />
-
-              <Controller
-                name="casa"
-                control={control}
-                defaultValue=""
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Casa"
-                    variant="outlined"
-                    size="small"
-                    color="success"
-                  />
-                )}
-              />
+              {DireccionInformacion.map((field) => (
+                <InputField
+                  name={field.name}
+                  control={control}
+                  label={field.label}
+                  rules={field.rules}
+                  errors={errors}
+                />
+              ))}
             </Box>
             <Box
               sx={{

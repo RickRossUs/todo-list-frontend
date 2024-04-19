@@ -1,28 +1,82 @@
 import { useState, useEffect, useContext } from "react";
-import {
-  Box,
-  Button,
-  Chip,
-  Tab,
-  Tabs,
-  Paper,
-  Rating,
-  Typography,
-} from "@mui/material";
+import { Box } from "@mui/material";
 import "@/assets/css/Producto.css";
 import HeaderProducto from "@/components/producto/HeaderProducto";
 import CardProducto from "@/components/producto/CardProducto";
 import Categorias from "@/components/producto/Categorias";
 import ProductosContext from "@/context/ProductosContext";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 
 const Productos = () => {
-  const { productos } = useContext(ProductosContext);
+  const {
+    productos,
+    getProductos,
+    selectedCategoria,
+    filterProductosByCategoria,
+    setEsFavorito,
+    getFavoritos,
+  } = useContext(ProductosContext);
   const location = useLocation();
+  const { userId, favorito } = useParams();
+  const [cantProductos, setCantProductos] = useState(0);
+  const [pantallaAnterior, setPantallaAnterior] = useState(10);
+
+  useEffect(() => {
+    if (favorito) getFavoritos("", selectedCategoria, cantProductos);
+    else if (selectedCategoria !== 0)
+      filterProductosByCategoria(
+        selectedCategoria,
+        location.pathname.includes("/perfil") ? userId : 0,
+        cantProductos
+      );
+    else if (cantProductos > 0 && !location.pathname.includes("/perfil")) {
+      getProductos("", 20, cantProductos);
+    }
+  }, [pantallaAnterior]);
+
+  useEffect(() => {
+    setCantProductos(0);
+    setPantallaAnterior(0);
+  }, [selectedCategoria]);
+
+  const handleScroll = () => {
+    const scrollPosition =
+      window.innerHeight + document.documentElement.scrollTop;
+    const scrollHeight = document.documentElement.offsetHeight;
+
+    if (
+      pantallaAnterior < scrollHeight &&
+      scrollPosition >= scrollHeight - 500 &&
+      scrollHeight > 250
+    ) {
+      setCantProductos((prevCantProductos) => prevCantProductos + 20);
+      setPantallaAnterior(scrollHeight);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    setCantProductos(0);
+    if (favorito) {
+      // setTimeout(() => {
+      // }, 500);
+      getFavoritos();
+      setEsFavorito(true);
+    } else {
+      getProductos();
+      setEsFavorito(false);
+    }
+  }, [favorito]);
 
   return (
     <div>
-      {location.pathname === "/productos" && <HeaderProducto />}
+      {location.pathname.includes("/productos") && <HeaderProducto />}
       <Categorias />
       <Box
         className="container-items"
@@ -37,7 +91,7 @@ const Productos = () => {
           rowGap: 2,
         }}
       >
-        {productos.map((producto) => (
+        {productos?.map((producto) => (
           <CardProducto producto={producto} key={producto.id} />
         ))}
       </Box>

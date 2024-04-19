@@ -5,6 +5,7 @@ import {
   fetchPatchCarrito,
   fetchDeleteCarrito,
 } from "@/services/CarritoService";
+import AuthContext from "@/context/AuthContext";
 
 const CarritoContext = createContext();
 
@@ -12,6 +13,7 @@ export default CarritoContext;
 
 export const CarritoProvider = ({ children }) => {
   const [carrito, setCarrito] = useState([]);
+  const { authTokens } = useContext(AuthContext);
 
   const getCarrito = async () => {
     const response = await fetchGetCarrito();
@@ -73,7 +75,7 @@ export const CarritoProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    getCarrito();
+    if (authTokens) getCarrito();
   }, []);
 
   return (

@@ -1,18 +1,14 @@
-import { useContext, useState, useEffect } from "react";
-import { Box, Card, Paper } from "@mui/material";
+import { useContext } from "react";
+import { Box, Paper } from "@mui/material";
 import "@/assets/css/Perfil.css";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
-import AuthContext from "@/context/AuthContext";
-import UsuarioContext from "@/context/UsuarioContext";
 import ProductosContext from "@/context/ProductosContext";
-import { getImageSrc } from '@/helpers/imageHelper';
+import { getImageSrc } from "@/helpers/imageHelper";
 
 const Galeria = () => {
   const navigate = useNavigate();
-  const { authTokens } = useContext(AuthContext);
-  const { user } = useContext(UsuarioContext);
   const { productos, eliminarProducto } = useContext(ProductosContext);
 
   return (

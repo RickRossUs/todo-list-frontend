@@ -5,11 +5,13 @@ import { AlertProvider } from "./context/AlertContext";
 import { combineProviders } from "@/helpers/CombineHelper";
 import Router from "./router/Router";
 import "./App.css";
+import { ProductosProvider } from '@/context/ProductosContext';
 
 function App() {
   const CombinedProviders = combineProviders([
     AuthProvider,
     UsuarioProvider,
+    ProductosProvider,
     AlertProvider,
   ]);
 

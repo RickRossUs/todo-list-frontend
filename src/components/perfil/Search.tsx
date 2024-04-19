@@ -7,7 +7,8 @@ import AuthContext from "@/context/AuthContext";
 import UsuarioContext from "@/context/UsuarioContext";
 import perfilDefault from "@/assets/img/Perfil//png-clipart-user-profile-get-em-cardiovascular-disease-zingah-avatar-miscellaneous-white.png";
 import { useNavigate } from "react-router-dom";
-import { getImageSrc } from '@/helpers/imageHelper';
+import { getImageSrc } from "@/helpers/imageHelper";
+import { fetchGetPerfiles } from "@/services/UsuariosService";
 
 function SearchBar() {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -41,19 +42,8 @@ function SearchBar() {
 
   useEffect(() => {
     const getUsuarios = async () => {
-      const response = await fetch(
-        "http://127.0.0.1:8000/usuarios/?username=" + search + "&limit=10",
-        {
-          method: "GET",
-          headers: {
-            Authorization: "Bearer " + String(authTokens.access),
-          },
-        }
-      );
-      const data = await response.json();
-      if (data) {
-        setUsaurios(data.results);
-      }
+      const response = await fetchGetPerfiles(search);
+      setUsaurios(JSON.parse(response).results);
     };
 
     getUsuarios();
@@ -141,42 +131,40 @@ function SearchBar() {
                 p: 0,
               }}
             >
-              {usuarios
-                .filter((usuario) => usuario.id !== user.id)
-                .map((usuario) => (
-                  <ListItem
-                    className="ListItem"
-                    onClick={() => {
-                      navigate("/perfil/" + usuario.id + "/");
+              {usuarios.map((usuario) => (
+                <ListItem
+                  className="ListItem"
+                  onClick={() => {
+                    navigate("/perfil/" + usuario.id + "/");
+                  }}
+                  key={usuario.id}
+                  sx={{ display: "flex", justifyContent: "space-between" }}
+                >
+                  <Box
+                    component="img"
+                    src={
+                      usuario.imagen
+                        ? getImageSrc(usuario.imagen)
+                        : perfilDefault
+                    }
+                    sx={{
+                      width: { xs: "20%", md: "10%" },
+                      aspectRatio: "1/1",
+                      borderRadius: 2,
+                      mr: 2,
+                      objectFit: "cover",
                     }}
-                    key={usuario.id}
-                    sx={{ display: "flex", justifyContent: "space-between" }}
+                  ></Box>
+                  <ListItemText
+                    sx={{
+                      pointerEvents: "none",
+                      display: { xs: "none", md: "block" },
+                    }}
                   >
-                    <Box
-                      component="img"
-                      src={
-                        usuario.imagen
-                          ? getImageSrc(usuario.imagen)
-                          : perfilDefault
-                      }
-                      sx={{
-                        width: { xs: "20%", md: "10%" },
-                        aspectRatio: "1/1",
-                        borderRadius: 2,
-                        mr: 2,
-                        objectFit: "cover",
-                      }}
-                    ></Box>
-                    <ListItemText
-                      sx={{
-                        pointerEvents: "none",
-                        display: { xs: "none", md: "block" },
-                      }}
-                    >
-                      {usuario.username}
-                    </ListItemText>
-                  </ListItem>
-                ))}
+                    {usuario.username}
+                  </ListItemText>
+                </ListItem>
+              ))}
             </List>
           </>
         ) : (

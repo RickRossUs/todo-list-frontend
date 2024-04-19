@@ -12,7 +12,7 @@ const SearchProductos = () => {
   const textFieldRef = useRef(null);
   const [search, setSearch] = useState("");
   const [active, setActive] = useState(false);
-  const { productos, getProductos } = useContext(ProductosContext);
+  const { productos, getProductos, getFavoritos, esFavorito } = useContext(ProductosContext);
   const { authTokens } = useContext(AuthContext);
 
   const handleSearchIconClick = () => {
@@ -37,7 +37,8 @@ const SearchProductos = () => {
   };
 
   useEffect(() => {
-    getProductos(search);
+    if (esFavorito) getFavoritos(search, "", 0)
+    else getProductos(search);
   }, [search]);
 
   return (

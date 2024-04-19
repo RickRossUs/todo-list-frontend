@@ -4,12 +4,14 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import "@/assets/css/Perfil.css";
 import AuthContext from "@/context/AuthContext";
 import UsuarioContext from "@/context/UsuarioContext";
+import ProductosContext from '@/context/ProductosContext';
 import { useNavigate } from "react-router-dom";
 
 const MenuPerfil = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const { logoutUsuario } = useContext(AuthContext);
   const { deleteUser } = useContext(UsuarioContext);
+  const { setEsFavorito } = useContext(ProductosContext);
   const navigate = useNavigate();
 
   const handleMenu = (event) => {
@@ -42,7 +44,7 @@ const MenuPerfil = () => {
           onClose={closeMenu}
           sx={{ position: "absolute", top: 0, right: 0 }}
         >
-          <MenuItem className="menuItem item-fav" onClick={closeMenu}>
+          <MenuItem className="menuItem item-fav" onClick={() => {navigate("/productos/favoritos")}}>
             <Box component="i" mr={2}></Box> Favoritos
           </MenuItem>
           <Divider />

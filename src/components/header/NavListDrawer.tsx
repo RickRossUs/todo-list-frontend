@@ -12,7 +12,6 @@ import HomeIcon from "@mui/icons-material/Home";
 import "@/assets/css/Header.css";
 import perfilDefault from "@/assets/img/Perfil//png-clipart-user-profile-get-em-cardiovascular-disease-zingah-avatar-miscellaneous-white.png";
 import { useNavigate } from "react-router-dom";
-import PropTypes from "prop-types";
 import PersonIcon from "@mui/icons-material/Person";
 import ToolsIcon from "@mui/icons-material/Build";
 import CupStrawIcon from "@mui/icons-material/LocalCafe";
@@ -25,22 +24,22 @@ const navLinks = [
   {
     title: "Sobre Nosotros",
     path: "#sobre",
-    icon: <PersonIcon />, // Use MUI icon
+    icon: <PersonIcon />,
   },
   {
     title: "Servicios",
     path: "#servicios",
-    icon: <ToolsIcon />, // Use MUI icon
+    icon: <ToolsIcon />,
   },
   {
     title: "Productos",
     path: "#productos",
-    icon: <CupStrawIcon />, // Use MUI icon
+    icon: <CupStrawIcon />,
   },
   {
     title: "Contacto",
     path: "#contacto",
-    icon: <BadgeIcon />, // Use MUI icon
+    icon: <BadgeIcon />,
   },
 ];
 

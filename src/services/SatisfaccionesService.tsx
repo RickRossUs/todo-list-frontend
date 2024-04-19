@@ -10,6 +10,19 @@ const axiosSatisfacciones = axios.create({
   },
 });
 
+axiosSatisfacciones.interceptors.request.use(
+  function (config) {
+    const authTokens = JSON.parse(localStorage.getItem("authTokens"));
+    if (authTokens) {
+      config.headers.Authorization = `Bearer ${authTokens.access}`;
+    }
+    return config;
+  },
+  function (error) {
+    return Promise.reject(error);
+  }
+);
+
 axiosSatisfacciones.interceptors.response.use(
   function (response) {
     return response.data;

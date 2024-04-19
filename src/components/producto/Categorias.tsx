@@ -5,21 +5,30 @@ import { useLocation, useParams } from "react-router-dom";
 
 const Categorias = () => {
   const {
+    productos,
     categorias,
+    getCategorias,
     selectedCategoria,
     setSelectedCategoria,
-    getProductos,
     filterProductosByCategoria,
+    esFavorito,
+    getFavoritos,
   } = useContext(ProductosContext);
   const location = useLocation();
   const { userId } = useParams();
 
   const handleCategoria = (e, newValue) => {
-    filterProductosByCategoria(
-      newValue,
-      location.pathname.includes("/perfil") ? userId : 0
-    );
+    if (esFavorito) getFavoritos("", newValue, 0);
+    else
+      filterProductosByCategoria(
+        newValue,
+        location.pathname.includes("/perfil") ? userId : 0
+      );
   };
+
+  useEffect(() => {
+    if (location.pathname.includes("/perfil")) getCategorias(userId);
+  }, [productos]);
 
   return (
     <div>

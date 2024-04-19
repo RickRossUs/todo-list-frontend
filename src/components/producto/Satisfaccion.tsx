@@ -9,22 +9,26 @@ import {
 } from "@/services/SatisfaccionesService";
 
 const Satisfaccion = ({ value, productoId }) => {
-  const handleSatisfaccion = async (event, newValue) => {
-    try {
-      const satisfacciones = await fetchGetSatisfacciones();
-      const satisfaccionExistente = satisfacciones.find(
-        (item) => item.producto.id === productoId
-      );
+  const { authTokens } = useContext(AuthContext);
 
-      if (newValue === 0 && satisfaccionExistente) {
-        await fetchDeleteSatisfaccion(satisfaccionExistente.id);
-      } else if (newValue !== 0 && !satisfaccionExistente) {
-        await fetchPostSatisfaccion(productoId, newValue);
-      } else if (newValue !== 0 && satisfaccionExistente) {
-        await fetchPatchSatisfaccion(satisfaccionExistente.id, newValue);
+  const handleSatisfaccion = async (event, newValue) => {
+    if (authTokens) {
+      try {
+        const satisfacciones = await fetchGetSatisfacciones();
+        const satisfaccionExistente = satisfacciones.find(
+          (item) => item.producto.id === productoId
+        );
+
+        if (newValue === 0 && satisfaccionExistente) {
+          await fetchDeleteSatisfaccion(satisfaccionExistente.id);
+        } else if (newValue !== 0 && !satisfaccionExistente) {
+          await fetchPostSatisfaccion(productoId, newValue);
+        } else if (newValue !== 0 && satisfaccionExistente) {
+          await fetchPatchSatisfaccion(satisfaccionExistente.id, newValue);
+        }
+      } catch (error) {
+        console.error("Error manejando la satisfacción:", error);
       }
-    } catch (error) {
-      console.error("Error manejando la satisfacción:", error);
     }
   };
 

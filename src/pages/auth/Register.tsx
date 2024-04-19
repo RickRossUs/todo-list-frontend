@@ -5,6 +5,8 @@ import "./Register.css";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "@/context/AuthContext";
 import UsuarioContext from "@/context/UsuarioContext";
+import { RegisterInformacion } from "@/forms/RegisterInformacion";
+import CInputField from "@/components/form/CInputField";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -22,22 +24,31 @@ const Register = () => {
 
   const password = watch("password", "");
 
+  const adjustedRegisterInformacion = RegisterInformacion.map((field) => {
+    if (field.name === "passwordConfirm") {
+      return {
+        ...field,
+        rules: {
+          ...field.rules,
+          validate: (value) =>
+            value === password || "Las contraseñas no coinciden",
+        },
+      };
+    }
+    return field;
+  });
+
   const createUser = async (data) => {
     const register = await registerUser(data);
     if (register) {
-      const login = await loginUsuario({ username: data.username, password: data.password });
+      const login = await loginUsuario({
+        username: data.username,
+        password: data.password,
+      });
       if (login) {
         navigate("/detalles-perfil");
       }
     }
-  };
-
-  const handleCancel = () => {
-    setFormValues({
-      user: "",
-      email: "",
-      password: "",
-    });
   };
 
   return (
@@ -79,7 +90,6 @@ const Register = () => {
             flexDirection: "column",
             justifyContent: "center",
             alignItems: "center",
-            // gap: 1,
             fontFamily: "poppins",
           }}
           onSubmit={handleSubmit(createUser)}
@@ -87,7 +97,7 @@ const Register = () => {
           <Typography
             component="h5"
             variant="h5"
-            sx={{ fontFamily: "poppins", mt: 5 }}
+            sx={{ fontFamily: "poppins" }}
           >
             Registrarme
           </Typography>
@@ -96,100 +106,24 @@ const Register = () => {
             noValidate
             sx={{
               width: "100%",
-              height: "100%",
+              mt: 3,
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
               alignItems: "center",
+              gap: 2,
             }}
           >
-            <TextField
-              variant="outlined"
-              margin="normal"
-              color="success"
-              fullWidth
-              id="user"
-              label="Usuario"
-              name="user"
-              {...register("username", {
-                required: "Username requerido",
-                validate: (value) =>
-                  (value && value.length > 5) ||
-                  "Debe contener más de 6 caracteres",
-              })}
-              error={!!errors.username}
-              helperText={errors.username?.message}
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              color="success"
-              fullWidth
-              id="email"
-              label="Correo"
-              name="email"
-              {...register("email", {
-                required: "Correo requerido",
-                pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-                  message: "Correo no válido",
-                },
-              })}
-              error={!!errors.email}
-              helperText={errors.email?.message}
-            />
-            <TextField
-              variant="outlined"
-              color="success"
-              margin="normal"
-              fullWidth
-              id="password"
-              label="Contraseña"
-              name="password"
-              type="password"
-              {...register("password", {
-                required: "Contraseña requerida",
-                minLength: {
-                  value: 8,
-                  message: "La contraseña debe tener al menos 8 caracteres",
-                },
-                validate: {
-                  hasUppercase: (value) =>
-                    /[A-Z]/.test(value) ||
-                    "La contraseña debe contener al menos una letra mayúscula",
-                  hasSpecialChar: (value) =>
-                    /[@$!%*?&.]/.test(value) ||
-                    "La contraseña debe contener al menos un carácter especial",
-                  hasLowercase: (value) =>
-                    /[a-z]/.test(value) ||
-                    "La contraseña debe contener al menos una letra minúscula",
-                  hasNumber: (value) =>
-                    /\d/.test(value) ||
-                    "La contraseña debe contener al menos un número",
-                },
-              })}
-              error={!!errors.password}
-              helperText={errors.password?.message}
-            />
-
-            <TextField
-              variant="outlined"
-              color="success"
-              margin="normal"
-              fullWidth
-              id="passwordConfirm"
-              label="Verificar contraseña"
-              name="passwordConfirm"
-              type="password"
-              {...register("passwordConfirm", {
-                required: "Confirmación de contraseña requerida",
-                validate: (value) =>
-                  value === password || "Las contraseñas no coinciden",
-              })}
-              error={!!errors.passwordConfirm}
-              helperText={errors.passwordConfirm?.message}
-            />
-
+            {adjustedRegisterInformacion.map((field) => (
+              <CInputField
+                name={field.name}
+                control={control}
+                label={field.label}
+                type={field.type}
+                rules={field.rules}
+                errors={errors}
+              />
+            ))}
             <Box
               sx={{
                 display: "flex",

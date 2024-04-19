@@ -1,7 +1,6 @@
 import { useContext } from "react";
 import { Box } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import AuthContext from "@/context/AuthContext";
 import ProductosContext from "@/context/ProductosContext";
 import {
   fetchPostFavorito,
@@ -9,7 +8,6 @@ import {
 } from "@/services/FavoritosService";
 
 const Favorito = ({ productoId, favorito }) => {
-  const { authTokens } = useContext(AuthContext);
   const { toggleFavorito } = useContext(ProductosContext);
 
   const onFavProducto = async () => {

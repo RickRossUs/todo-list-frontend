@@ -1,9 +1,8 @@
-import { useState, useEffect, useContext } from "react";
+import { useContext } from "react";
 import {
   Box,
   Button,
   Chip,
-  Tabs,
   Paper,
   Typography,
 } from "@mui/material";
@@ -15,11 +14,10 @@ import CarritoContext from "@/context/CarritoContext";
 import ProductosContext from "@/context/ProductosContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getImageSrc } from '@/helpers/imageHelper';
-
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
-const CardCarrito = ({producto}) => {
+const CardCarrito = ({producto, userId}) => {
   const { authTokens } = useContext(AuthContext);
   const { user } = useContext(UsuarioContext);
   const { buyCarrito } = useContext(CarritoContext);
@@ -66,7 +64,7 @@ const CardCarrito = ({producto}) => {
             }}
           />
           {authTokens ? (
-            user.id !== producto.usuario.id ? (
+            user?.id !== producto.usuario.id ? (
               <Favorito productoId={producto.id} favorito={producto.es_favorito} />
             ) : (
               <Box
@@ -153,9 +151,9 @@ const CardCarrito = ({producto}) => {
               width: "fit-content",
               fontSize: { xs: "10px" },
             }}
-            onClick={(e) => filterProductosByCategoria(producto.categoria.id)}
+            onClick={(e) => filterProductosByCategoria(producto.categoria.id, producto.usuario.id)}
           ></Chip>
-          {authTokens && user.id !== producto.usuario.id ? (
+          {authTokens && user?.id !== producto.usuario.id ? (
             <Button
               className="btn-cart"
               onClick={() => buyCarrito(producto.id)}

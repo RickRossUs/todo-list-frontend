@@ -1,28 +1,23 @@
-import { useState, useRef } from "react";
-import {
-  AppBar,
-  Box,
-  Badge,
-  Typography,
-  List,
-  ListItem,
-  ListItemText,
-  Paper,
-  ListItemButton,
-  Divider,
-  Button,
-  TextField
-} from "@mui/material";
+import { useContext, useState } from "react";
+import { AppBar, Box, Typography } from "@mui/material";
 import "@/assets/css/Producto.css";
 import { useNavigate } from "react-router-dom";
-import PropTypes from "prop-types";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import PaperCarrito from "./PaperCarrito"
-import SearchProductos from "./SearchProductos"
+import PaperCarrito from "./PaperCarrito";
+import SearchProductos from "./SearchProductos";
+import AuthContext from "@/context/AuthContext";
+import ProductosContext from "@/context/ProductosContext";
 
 const HeaderProducto = ({ allProducts, setAllProducts }) => {
   const navigate = useNavigate();
+  const { authTokens } = useContext(AuthContext);
+  const { esFavorito } = useContext(ProductosContext);
+
+  const handleFavorito = () => {
+    if (!esFavorito) navigate("/productos/favorito");
+    else navigate("/productos");
+  };
 
   return (
     <div>
@@ -60,14 +55,23 @@ const HeaderProducto = ({ allProducts, setAllProducts }) => {
             height: { xs: "3vh" },
           }}
         >
-          <Box>
-            <FavoriteIcon sx={{ fontSize: { xs: "14px", md: "18px" } }} />
-          </Box>
-      <PaperCarrito />
-          
+          {authTokens ? (
+            <>
+              <FavoriteIcon
+                sx={{
+                  fontSize: { xs: "14px", md: "18px" },
+                  cursor: "pointer",
+                  color: esFavorito ? "red" : "white",
+                }}
+                onClick={() => handleFavorito()}
+              />
+              <PaperCarrito />
+            </>
+          ) : (
+            ""
+          )}
         </Box>
       </AppBar>
-
     </div>
   );
 };

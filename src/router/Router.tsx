@@ -9,43 +9,29 @@ import CrearPerfil from "../pages/CrearPerfil";
 import CrearProducto from "@/pages/CrearProducto";
 import Productos from "../pages/Productos";
 import { CarritoProvider } from "@/context/CarritoContext";
-import { ProductosProvider } from "@/context/ProductosContext";
-import { combineProviders } from "@/helpers/CombineHelper";
 
 const Router = () => {
-  const CombinedProviders = combineProviders([
-    CarritoProvider,
-    ProductosProvider,
-  ]);
-  
   return (
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route
-        path="/productos"
+        path="/productos/:favorito?"
         element={
-          <CombinedProviders>
+          <CarritoProvider>
             <Productos />
-          </CombinedProviders>
+          </CarritoProvider>
         }
       />
-      <Route
-        path="/crear-producto/:productId?"
-        element={
-          <ProductosProvider>
-            <CrearProducto />
-          </ProductosProvider>
-        }
-      />
+      <Route path="/crear-producto/:productId?" element={<CrearProducto />} />
       <Route
         path="/perfil/:userId?"
         element={
           <ProtectedRoute>
-            <CombinedProviders>
+            <CarritoProvider>
               <Perfil />
-            </CombinedProviders>
+            </CarritoProvider>
           </ProtectedRoute>
         }
       />

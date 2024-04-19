@@ -5,9 +5,23 @@ const axiosFavoritos = axios.create({
   headers: {
     "Content-Type": "application/json",
     Authorization:
-      "Bearer " + String(JSON.parse(localStorage.getItem("authTokens"))?.access),
+      "Bearer " +
+      String(JSON.parse(localStorage.getItem("authTokens"))?.access),
   },
 });
+
+axiosFavoritos.interceptors.request.use(
+  function (config) {
+    const authTokens = JSON.parse(localStorage.getItem("authTokens"));
+    if (authTokens) {
+      config.headers.Authorization = `Bearer ${authTokens.access}`;
+    }
+    return config;
+  },
+  function (error) {
+    return Promise.reject(error);
+  }
+);
 
 axiosFavoritos.interceptors.response.use(
   function (response) {

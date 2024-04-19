@@ -5,12 +5,14 @@ import {
   Stack,
   Paper,
   Typography,
-  TextField,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
 import AuthContext from "@/context/AuthContext";
 import UsuarioContext from "@/context/UsuarioContext";
 import Loading from "@/components/snipper/loading";
+import CInputField from "@/components/form/CInputField";
+import { LoginInformacion } from "@/forms/LoginInformacion";
 import "./Login.css";
 
 const Login = () => {
@@ -19,40 +21,21 @@ const Login = () => {
     password: "",
   });
 
-  const inputs = [
-    {
-      id: 1,
-      name: "Usuario",
-      type: "text",
-      placeholder: "Usuario",
-      errorMessage:
-        "El nombre de usuario debe ser único, debe contener entre 3 y 16 caracteres y no usar símbolos especiales.",
-      required: true,
-    },
-    {
-      id: 2,
-      name: "Contraseña",
-      type: "password",
-      placeholder: "Contraseña",
-      errorMessage: "La contraseña debe contener letras, números y símbolos.",
-      required: true,
-    },
-  ];
-
   const navigate = useNavigate();
   const { loginUsuario } = useContext(AuthContext);
   const { getPerfil } = useContext(UsuarioContext);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm();
+
+  const onSubmit = async (data) => {
     setIsLoading(true);
     try {
-      const token = await loginUsuario({
-        username: values.Usuario,
-        password: values.Contraseña,
-      });
-
+      const token = await loginUsuario(data);
       if (token) {
         getPerfil();
         navigate("/");
@@ -64,10 +47,6 @@ const Login = () => {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const onChange = (e) => {
-    setValues({ ...values, [e.target.name]: e.target.value });
   };
 
   return (
@@ -109,7 +88,7 @@ const Login = () => {
           <Box
             component="form"
             className="form-log"
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmit(onSubmit)}
             sx={{ p: 2, width: { xs: "100%", md: "40%" } }}
           >
             <Typography
@@ -137,17 +116,14 @@ const Login = () => {
                 width: "90%",
               }}
             >
-              {inputs.map((input) => (
-                <TextField
-                  key={input.id}
-                  label={input.name}
-                  variant="outlined"
-                  fullWidth
-                  {...input}
-                  value={values[input.name]}
-                  placeholder={input.placeholder}
-                  type={input.type}
-                  onChange={onChange}
+              {LoginInformacion.map((field) => (
+                <CInputField
+                  name={field.name}
+                  control={control}
+                  label={field.label}
+                  type={field.type}
+                  rules={field.rules}
+                  errors={errors}
                 />
               ))}
               <Box
@@ -171,7 +147,6 @@ const Login = () => {
                   type="submit"
                   variant="contained"
                   color="success"
-                  onSubmit={handleSubmit}
                   sx={{ fontSize: { xs: "10px" } }}
                 >
                   Aceptar

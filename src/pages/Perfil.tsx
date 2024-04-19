@@ -1,31 +1,20 @@
 import { useState, useContext, useEffect } from "react";
-import {
-  AppBar,
-  Box,
-  TextField,
-  Toolbar,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+import { AppBar, Box, Toolbar, Typography } from "@mui/material";
 import "@/assets/css/Perfil.css";
 import Galeria from "@/components/perfil/Galeria";
-import MenuPerfil from "@/components/perfil/MenuPerfil";
-import Search from "@/components/perfil/Search";
 import AgregarProducto from "@/components/producto/AgregarProducto";
 import Productos from "@/pages/Productos";
-import PaperCarrito from "@/components/producto/PaperCarrito";
-import AuthContext from "@/context/AuthContext";
 import UsuarioContext from "@/context/UsuarioContext";
 import { useNavigate, useParams } from "react-router-dom";
-import perfilDefault from "@/assets/img/Perfil//png-clipart-user-profile-get-em-cardiovascular-disease-zingah-avatar-miscellaneous-white.png";
+import perfilDefault from "@/assets/img/Perfil/png-clipart-user-profile-get-em-cardiovascular-disease-zingah-avatar-miscellaneous-white.png";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ProductosContext from "@/context/ProductosContext";
 import { getImageSrc } from "@/helpers/imageHelper";
 import { fetchGetPerfil } from "@/services/UsuariosService";
+import AppBarComponent from "@/components/perfil/AppBarComponent";
 
 const Perfil = () => {
-  const { authTokens } = useContext(AuthContext);
   const { user } = useContext(UsuarioContext);
   const navigate = useNavigate();
   const { userId } = useParams();
@@ -34,13 +23,13 @@ const Perfil = () => {
 
   useEffect(() => {
     const getUsuario = async () => {
-      const response = await fetchGetPerfil(userId)
+      const response = await fetchGetPerfil(userId);
       if (response) {
         setUsuario(JSON.parse(response));
         setProductos(JSON.parse(response).productos);
       }
     };
-    
+
     if (userId) {
       getUsuario();
     } else {
@@ -51,43 +40,7 @@ const Perfil = () => {
 
   return (
     <div>
-      <AppBar
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          pl: 2,
-          bgcolor: "rgba(104, 238, 144, 0.5)",
-          boxShadow: 0,
-          backdropFilter: "blur(10px)",
-        }}
-      >
-        <Typography sx={{ flexGrow: 1, fontFamily: "poppins" }}>
-          <ArrowBackIcon
-            onClick={() => {
-              navigate("/");
-            }}
-            cursor="pointer"
-          />
-        </Typography>
-        <Typography sx={{ flexGrow: 1, fontFamily: "poppins" }}>
-          @{usuario?.username}
-        </Typography>
-        <Toolbar>
-          <Search />
-          <PaperCarrito />
-          {userId === undefined ? (
-            <MenuPerfil />
-          ) : (
-            <AccountCircleIcon
-              onClick={() => {
-                navigate("/perfil");
-              }}
-              sx={{ m: 2, cursor: "pointer" }}
-            />
-          )}
-        </Toolbar>
-      </AppBar>
+      <AppBarComponent userId={userId} username={usuario?.username} />
       <Box
         className="portada-perfil"
         sx={{

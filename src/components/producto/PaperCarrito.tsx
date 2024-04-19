@@ -2,34 +2,17 @@ import { useContext, useState } from "react";
 import CarritoContext from "@/context/CarritoContext";
 import { useNavigate } from "react-router-dom";
 import CloseIcon from "@mui/icons-material/Close";
-import DeleteIcon from "@mui/icons-material/Delete";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import {
-  Box,
-  Badge,
-  Typography,
-  List,
-  ListItem,
-  ListItemText,
-  Paper,
-  ListItemButton,
-  Divider,
-} from "@mui/material";
+import { Box, Badge, Typography, List, Paper, Divider } from "@mui/material";
+import ItemCarrito from "./ItemCarrito";
 
 const PaperCarrito = () => {
   const [active, setActive] = useState(false);
   const [cant, setCant] = useState(0);
   const [invisible, setInvisible] = useState(false);
   const navigate = useNavigate();
-  
-  const {
-    carrito,
-    setCarrito,
-    getCarrito,
-    buyCarrito,
-    plusCarrito,
-    removeFromCarrito,
-  } = useContext(CarritoContext);
+
+  const { carrito } = useContext(CarritoContext);
 
   const totalPrice = carrito.reduce((accumulator, product) => {
     return accumulator + product.producto.precio * product.cantidad;
@@ -53,7 +36,7 @@ const PaperCarrito = () => {
           variant="standard"
           anchorOrigin={{ vertical: "top", horizontal: "right" }}
           invisible={invisible}
-          sx={{ width: "25px", m:"0 5px 0 20px" }}
+          sx={{ width: "25px", m: "0 5px 0 20px" }}
           badgeContent={totalCantidad}
           showZero={false}
         >
@@ -96,120 +79,7 @@ const PaperCarrito = () => {
               }}
             >
               {carrito.map((product) => (
-                <ListItem
-                  className="info"
-                  key={product.id}
-                  sx={{ display: "flex", justifyContent: "space-between" }}
-                >
-                  <Box
-                    component="img"
-                    src={product.producto.imagen}
-                    sx={{
-                      width: { xs: "20%", md: "10%" },
-                      aspectRatio: "1/1",
-                      borderRadius: 2,
-                      mr: 2,
-                      objectFit: "cover",
-                    }}
-                  ></Box>
-                  <ListItemText sx={{ pointerEvents: "none" }}>
-                    {product.cantidad}
-                  </ListItemText>
-                  <ListItemText
-                    sx={{
-                      pointerEvents: "none",
-                      display: { xs: "none", md: "block" },
-                    }}
-                  >
-                    {product.producto.nombre}
-                  </ListItemText>
-                  <ListItemText
-                    sx={{
-                      pointerEvents: "none",
-                      display: { xs: "none", md: "block" },
-                    }}
-                  >
-                    ${product.producto.precio}
-                  </ListItemText>
-                  <ListItem
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      width: "250px",
-                    }}
-                  >
-                    <ListItemButton
-                      onClick={() => {
-                        plusCarrito(product.id, true);
-                      }}
-                      sx={{
-                        bgcolor: { xs: "transparent", md: "#90ee908a" },
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        borderRadius: 2,
-                        mr: 1,
-                        aspectRatio: "1/1",
-                        height: { xs: "40px", md: "40px" },
-                        width: { xs: "20px", md: "20px" },
-                        fontSize: {
-                          xs: "10",
-                          md: "16px",
-                          height: { xs: "2rem" },
-                        },
-                      }}
-                    >
-                      +
-                    </ListItemButton>
-                    <ListItemButton
-                      onClick={() => {
-                        plusCarrito(product.id, false);
-                      }}
-                      sx={{
-                        bgcolor: { xs: "transparent", md: "#90ee908a" },
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        borderRadius: 2,
-                        mr: 1,
-                        height: { xs: "40px", md: "40px" },
-                        width: { xs: "20px", md: "20px" },
-                        fontSize: {
-                          xs: "10",
-                          md: "16px",
-                          height: { xs: "2rem" },
-                        },
-                      }}
-                    >
-                      -
-                    </ListItemButton>
-                    <ListItemButton
-                      onClick={() => {
-                        removeFromCarrito(product.id);
-                      }}
-                      component="i"
-                      sx={{
-                        cursor: "pointer",
-                        bgcolor: "red",
-                        color: "white",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        borderRadius: 2,
-                        height: { xs: "40px", md: "40px" },
-                        width: { xs: "20px", md: "20px" },
-                        fontSize: {
-                          xs: "10",
-                          md: "16px",
-                          height: { xs: "1rem" },
-                        },
-                      }}
-                    >
-                      <DeleteIcon />
-                    </ListItemButton>
-                  </ListItem>
-                </ListItem>
+                <ItemCarrito key={product.id} product={product} />
               ))}
             </List>
             <Divider sx={{ width: "90%", mb: 2 }} />

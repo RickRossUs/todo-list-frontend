@@ -1,6 +1,6 @@
 import React from 'react'
 import Portada from '@/components/home/Portada'
-import Header from '@/components/header/Header'
+import Navbar from '@/components/header/Navbar'
 import SobreNosotros from '@/components/sobre/SobreNosotros'
 import Servicios from '@/components/home/Servicios'
 import SeccionContador from '@/components/home/SeccionContador'
@@ -13,7 +13,7 @@ const Home = () => {
   return (
     <div style={{ overflow: 'hidden' }}>
       <Portada/>
-      <Header/>
+      <Navbar/>
       <SobreNosotros/>
       <Servicios/>
       <SeccionContador/>
