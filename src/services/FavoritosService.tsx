@@ -6,13 +6,15 @@ const axiosFavoritos = axios.create({
     "Content-Type": "application/json",
     Authorization:
       "Bearer " +
-      String(JSON.parse(localStorage.getItem("authTokens"))?.access),
+      (localStorage.getItem("authTokens")
+        ? JSON.parse(localStorage.getItem("authTokens") || "{}").access
+        : ""),
   },
 });
 
 axiosFavoritos.interceptors.request.use(
   function (config) {
-    const authTokens = JSON.parse(localStorage.getItem("authTokens"));
+    const authTokens = JSON.parse(localStorage.getItem("authTokens") || "");
     if (authTokens) {
       config.headers.Authorization = `Bearer ${authTokens.access}`;
     }
@@ -23,19 +25,30 @@ axiosFavoritos.interceptors.request.use(
   }
 );
 
-axiosFavoritos.interceptors.response.use(
-  function (response) {
-    return JSON.stringify(response.data);
-  },
-  function (error) {
-    return Promise.reject(error);
-  }
-);
+export const fetchGetFavoritos = (
+  nombre: string = "",
+  categoriaId: number = 0,
+  offset: number = 0
+) => {
+  return axiosFavoritos.get(
+    `?nombre=${nombre}&categoria=${
+      categoriaId === 0 ? "" : categoriaId
+    }&limit=20&offset=${offset}`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization:
+          "Bearer " +
+          String(JSON.parse(localStorage.getItem("authTokens") || "")?.access),
+      },
+    }
+  );
+};
 
-export const fetchPostFavorito = (productoId) => {
+export const fetchPostFavorito = (productoId: number) => {
   return axiosFavoritos.post("", { producto: productoId });
 };
 
-export const fetchDeleteFavorito = (favoritoId) => {
+export const fetchDeleteFavorito = (favoritoId: number) => {
   return axiosFavoritos.delete(favoritoId + "/");
 };

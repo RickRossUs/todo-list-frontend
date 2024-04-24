@@ -1,4 +1,3 @@
-import React from "react";
 import { AppBar, Toolbar, Typography } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -7,7 +6,7 @@ import PaperCarrito from "@/components/producto/PaperCarrito";
 import MenuPerfil from "./MenuPerfil";
 import { useNavigate } from "react-router-dom";
 
-const AppBarComponent = ({ userId, username }) => {
+const AppBarComponent = ({ userId, username }: { userId: number, username: string }) => {
   const navigate = useNavigate();
 
   return (
@@ -36,15 +35,15 @@ const AppBarComponent = ({ userId, username }) => {
       <Toolbar>
         <Search />
         <PaperCarrito />
-        {userId === undefined ? (
-          <MenuPerfil />
-        ) : (
+        {userId ? (
           <AccountCircleIcon
-            onClick={() => {
-              navigate("/perfil");
-            }}
-            sx={{ m: 2, cursor: "pointer" }}
+          onClick={() => {
+            navigate("/perfil");
+          }}
+          sx={{ m: 2, cursor: "pointer" }}
           />
+        ) : (
+          <MenuPerfil />
         )}
       </Toolbar>
     </AppBar>

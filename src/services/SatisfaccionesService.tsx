@@ -6,13 +6,15 @@ const axiosSatisfacciones = axios.create({
     "Content-Type": "application/json",
     Authorization:
       "Bearer " +
-      String(JSON.parse(localStorage.getItem("authTokens"))?.access),
+      (localStorage.getItem("authTokens")
+        ? JSON.parse(localStorage.getItem("authTokens") || "{}").access
+        : ""),
   },
 });
 
 axiosSatisfacciones.interceptors.request.use(
   function (config) {
-    const authTokens = JSON.parse(localStorage.getItem("authTokens"));
+    const authTokens = JSON.parse(localStorage.getItem("authTokens") || "");
     if (authTokens) {
       config.headers.Authorization = `Bearer ${authTokens.access}`;
     }
@@ -23,30 +25,21 @@ axiosSatisfacciones.interceptors.request.use(
   }
 );
 
-axiosSatisfacciones.interceptors.response.use(
-  function (response) {
-    return response.data;
-  },
-  function (error) {
-    return Promise.reject(error);
-  }
-);
-
 export const fetchGetSatisfacciones = () => {
   return axiosSatisfacciones.get("");
 };
 
-export const fetchPostSatisfaccion = (productoId, calificacion) => {
+export const fetchPostSatisfaccion = (productoId: number, calificacion: number) => {
   return axiosSatisfacciones.post("", {
     producto: productoId,
     calificacion: calificacion,
   });
 };
 
-export const fetchPatchSatisfaccion = (id, calificacion) => {
+export const fetchPatchSatisfaccion = (id: number, calificacion: number) => {
   return axiosSatisfacciones.patch(id + "/", { calificacion: calificacion });
 };
 
-export const fetchDeleteSatisfaccion = (id) => {
+export const fetchDeleteSatisfaccion = (id: number) => {
   return axiosSatisfacciones.delete(id + "/");
 };

@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { AppBar, Box, Typography } from "@mui/material";
 import "@/assets/css/Producto.css";
 import { useNavigate } from "react-router-dom";
@@ -8,11 +8,13 @@ import PaperCarrito from "./PaperCarrito";
 import SearchProductos from "./SearchProductos";
 import AuthContext from "@/context/AuthContext";
 import ProductosContext from "@/context/ProductosContext";
+import { AuthContextValue } from "@/types/AuthContextValue";
+import { ProductosContextValue } from "@/types/ProductosContextValue ";
 
-const HeaderProducto = ({ allProducts, setAllProducts }) => {
+const HeaderProducto = () => {
   const navigate = useNavigate();
-  const { authTokens } = useContext(AuthContext);
-  const { esFavorito } = useContext(ProductosContext);
+  const { authTokens } = useContext(AuthContext) as AuthContextValue;
+  const { esFavorito } = useContext(ProductosContext) as ProductosContextValue;
 
   const handleFavorito = () => {
     if (!esFavorito) navigate("/productos/favorito");

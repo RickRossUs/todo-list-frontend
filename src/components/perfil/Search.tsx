@@ -1,23 +1,21 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
+import { useState, useEffect, useRef, ChangeEvent } from "react";
 import { Box, Paper, List, ListItem, ListItemText } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import SearchIcon from "@mui/icons-material/Search";
-import CloseIcon from "@mui/icons-material/Close";
-import AuthContext from "@/context/AuthContext";
-import UsuarioContext from "@/context/UsuarioContext";
 import perfilDefault from "@/assets/img/Perfil//png-clipart-user-profile-get-em-cardiovascular-disease-zingah-avatar-miscellaneous-white.png";
 import { useNavigate } from "react-router-dom";
 import { getImageSrc } from "@/helpers/imageHelper";
 import { fetchGetPerfiles } from "@/services/UsuariosService";
+import { Usuario } from "@/types/Usuario";
+import { AxiosResponse } from "axios";
+import { OffsetResponse } from "@/types/OffsetResponse";
 
 function SearchBar() {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [active, setActive] = useState(false);
-  const [usuarios, setUsaurios] = useState([]);
-  const [search, setSearch] = useState("");
-  const { authTokens } = useContext(AuthContext);
-  const { user } = useContext(UsuarioContext);
-  const textFieldRef = useRef(null);
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  const [active, setActive] = useState<boolean>(false);
+  const [usuarios, setUsaurios] = useState<Array<Usuario>>([]);
+  const [search, setSearch] = useState<string>("");
+  const textFieldRef = useRef<HTMLInputElement | null>(null);
   const navigate = useNavigate();
 
   const handleSearchIconClick = () => {
@@ -36,14 +34,14 @@ function SearchBar() {
     }, 300);
   };
 
-  const handleSearchChange = (event) => {
+  const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSearch(event.target.value);
   };
 
   useEffect(() => {
     const getUsuarios = async () => {
-      const response = await fetchGetPerfiles(search);
-      setUsaurios(JSON.parse(response).results);
+      const response: AxiosResponse<OffsetResponse> = await fetchGetPerfiles(search);
+      setUsaurios(response.data.results);
     };
 
     getUsuarios();
@@ -94,10 +92,9 @@ function SearchBar() {
             },
           }}
           InputProps={{
-            classes: {
-              notchedOutline: {
-                borderColor: "white",
-              },
+            className: "notchedOutline",
+            style: {
+              borderColor: "white",
             },
           }}
           inputRef={textFieldRef}

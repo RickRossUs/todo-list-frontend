@@ -1,4 +1,3 @@
-import React from "react";
 import { Box, Container, Typography } from "@mui/material";
 import "./SobreNosotros.css";
 import logo from "../../assets/img/Fondos/thumb-1920-1274685.jpg";
@@ -42,7 +41,6 @@ const SobreNosotros = () => {
 
           <Typography
             component="p"
-            variant="p"
             sx={{
               textAlign: "center",
               mb: 2,
@@ -65,7 +63,7 @@ const SobreNosotros = () => {
           </Typography>
 
           <Typography
-            component="marquee"
+            component="div"
             sx={{
               fontFamily: "poppins",
               fontWeight: 700,

@@ -1,4 +1,5 @@
 import { useContext } from "react";
+import { AxiosResponse } from "axios";
 import { Box } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ProductosContext from "@/context/ProductosContext";
@@ -6,17 +7,20 @@ import {
   fetchPostFavorito,
   fetchDeleteFavorito,
 } from "@/services/FavoritosService";
+import { Es_Favorito } from "@/types/Es_Favorito";
+import { ProductosContextValue } from "@/types/ProductosContextValue ";
+import type { Favorito } from "@/types/Favorito";
 
-const Favorito = ({ productoId, favorito }) => {
-  const { toggleFavorito } = useContext(ProductosContext);
+const Favorito = ({ productoId, favorito }: {productoId:number, favorito:Es_Favorito}) => {
+  const { toggleFavorito } = useContext(ProductosContext) as ProductosContextValue;
 
   const onFavProducto = async () => {
     try {
-      const response = favorito.is
+      const response: AxiosResponse<Favorito> = favorito.is
         ? await fetchDeleteFavorito(favorito.id)
         : await fetchPostFavorito(productoId);
 
-      toggleFavorito(productoId, JSON.parse(response)?.id, !favorito.is);
+      toggleFavorito(productoId, response.data.id, !favorito.is);
     } catch (error) {
       console.error("Error fetching products:", error);
     }

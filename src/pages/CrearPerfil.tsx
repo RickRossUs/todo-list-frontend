@@ -1,7 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import { Box, Button, Paper, Typography } from "@mui/material";
-import { useForm } from "react-hook-form";
-import AuthContext from "@/context/AuthContext";
+import { SubmitHandler, FieldValues, useForm } from "react-hook-form";
 import UsuarioContext from "@/context/UsuarioContext";
 import { useNavigate } from "react-router-dom";
 import "@/assets/css/Perfil.css";
@@ -10,12 +9,14 @@ import InputField from "@/components/form/CInputField";
 import { fetchDireccion } from "@/services/UsuariosService";
 import { UsuarioInformacion } from "@/forms/UsuarioInformacion";
 import { DireccionInformacion } from "@/forms/DireccionInformacion";
+import { UsuariosContextValue } from "@/types/UsuariosContextValue";
 
 const CrearPerfil = () => {
-  const [imagen, setImage] = useState(null);
+  const [imagen, setImage] = useState<string | null>(null);
   const [fileName, setFileName] = useState("No hay imagen");
-  const { authTokens } = useContext(AuthContext);
-  const { user, fetchPerfil, setUser, updateUser } = useContext(UsuarioContext);
+  const { user, setUser, updateUser } = useContext(
+    UsuarioContext
+  ) as UsuariosContextValue;
   const navigate = useNavigate();
 
   const {
@@ -26,17 +27,16 @@ const CrearPerfil = () => {
     formState: { errors },
   } = useForm();
 
-  const updateUsuario = async (data) => {
+  const updateUsuario: SubmitHandler<FieldValues> = async (data) => {
     const formData = new FormData();
+    const direccion = new FormData();
 
-    const direccion = {
-      ...(data?.provincia ? { provincia: data.provincia } : {}),
-      ...(data?.municipio ? { municipio: data.municipio } : {}),
-      ...(data?.calle ? { calle: data.calle } : {}),
-      ...(data?.casa ? { casa: data.casa } : {}),
-    };
+    data?.provincia && direccion.append("provincia", data.provincia);
+    data?.municipio && direccion.append("municipio", data.municipio);
+    data?.calle && direccion.append("calle", data.calle);
+    data?.casa && direccion.append("casa", data.casa);
 
-    fetchDireccion(user?.direccion?.id, direccion);
+    fetchDireccion(user?.direccion?.id || 0, direccion);
 
     formData.append("username", data?.username);
     formData.append("email", data?.email);
@@ -60,7 +60,7 @@ const CrearPerfil = () => {
     setValue("calle", user?.direccion?.calle);
     setValue("casa", user?.direccion?.casa);
     if (user?.imagen) {
-      setImage(user?.imagen);
+      setImage(user?.imagen || null);
     }
   }, [user, setValue, setUser]);
 
@@ -112,8 +112,10 @@ const CrearPerfil = () => {
                   name={field.name}
                   control={control}
                   label={field.label}
+                  type="text"
                   rules={field.rules}
                   errors={errors}
+                  defaultValue={""}
                 />
               ))}
             </Box>
@@ -138,8 +140,10 @@ const CrearPerfil = () => {
                   name={field.name}
                   control={control}
                   label={field.label}
+                  type="text"
                   rules={field.rules}
                   errors={errors}
+                  defaultValue={""}
                 />
               ))}
             </Box>

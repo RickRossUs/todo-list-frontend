@@ -1,21 +1,21 @@
-import React, { createContext, useState, useEffect } from "react";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
+import { createContext, useState, ReactNode } from "react";
+import { Snackbar, Alert } from "@mui/material";
+import { AlertContextValue } from "@/types/AlertContextValue";
 
-const AlertContext = createContext();
+const AlertContext = createContext<AlertContextValue | null>(null);
 
 export default AlertContext;
 
-export const AlertProvider = ({ children }) => {
-  const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState("");
-  const [severity, setSeverity] = useState("success");
+export const AlertProvider = ({ children }: { children: ReactNode }) => {
+  const [open, setOpen] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>("");
+  const [severity, setSeverity] = useState<'success' | 'error' | 'warning' | 'info'>("success");
 
-  const showAlert = (msg, sev = "success") => {
+  const showAlert = (msg: string, sev: 'success' | 'error' | 'warning' | 'info' = "success") => {
     setMessage(msg);
     setSeverity(sev);
     setOpen(true);
-    setTimeout(() => setOpen(false), 4000); // Close after 4 seconds
+    setTimeout(() => setOpen(false), 4000);
   };
 
   return (

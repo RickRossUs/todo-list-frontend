@@ -33,16 +33,16 @@ export const RegisterInformacion = [
         message: "La contraseña debe tener al menos 8 caracteres",
       },
       validate: {
-        hasUppercase: (value) =>
+        hasUppercase: (value: string) =>
           /[A-Z]/.test(value) ||
           "La contraseña debe contener al menos una letra mayúscula",
-        hasSpecialChar: (value) =>
+        hasSpecialChar: (value: string) =>
           /[@$!%*?&.]/.test(value) ||
           "La contraseña debe contener al menos un carácter especial",
-        hasLowercase: (value) =>
+        hasLowercase: (value: string) =>
           /[a-z]/.test(value) ||
           "La contraseña debe contener al menos una letra minúscula",
-        hasNumber: (value) =>
+        hasNumber: (value: string) =>
           /\d/.test(value) || "La contraseña debe contener al menos un número",
       },
     },

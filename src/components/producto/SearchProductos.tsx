@@ -1,19 +1,18 @@
-import { useState, useContext, useRef, useEffect } from "react";
+import { useState, useContext, useRef, useEffect, ChangeEvent } from "react";
 import {
   Box,
   TextField
 } from "@mui/material";
 import ProductosContext from "@/context/ProductosContext";
-import AuthContext from "@/context/AuthContext";
 import SearchIcon from "@mui/icons-material/Search";
+import { ProductosContextValue } from '../../types/ProductosContextValue ';
 
 const SearchProductos = () => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const textFieldRef = useRef(null);
-  const [search, setSearch] = useState("");
-  const [active, setActive] = useState(false);
-  const { productos, getProductos, getFavoritos, esFavorito } = useContext(ProductosContext);
-  const { authTokens } = useContext(AuthContext);
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  const textFieldRef = useRef<HTMLInputElement | null>(null);
+  const [search, setSearch] = useState<string>("");
+  const [active, setActive] = useState<boolean>(false);
+  const { getProductos, getFavoritos, esFavorito } = useContext(ProductosContext) as ProductosContextValue;
 
   const handleSearchIconClick = () => {
     if (!active) {
@@ -32,13 +31,13 @@ const SearchProductos = () => {
     }, 300);
   };
 
-  const handleSearchChange = (event) => {
+  const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSearch(event.target.value);
   };
 
   useEffect(() => {
-    if (esFavorito) getFavoritos(search, "", 0)
-    else getProductos(search);
+    if (esFavorito) getFavoritos(search, 0, 0)
+    else getProductos(search, 0, 0, 20, 0);
   }, [search]);
 
   return (
@@ -86,10 +85,9 @@ const SearchProductos = () => {
             },
           }}
           InputProps={{
-            classes: {
-              notchedOutline: {
-                borderColor: "white",
-              },
+            className: "notchedOutline",
+            style: {
+              borderColor: "white",
             },
           }}
           inputRef={textFieldRef}

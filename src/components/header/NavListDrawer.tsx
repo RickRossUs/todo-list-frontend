@@ -18,7 +18,9 @@ import CupStrawIcon from "@mui/icons-material/LocalCafe";
 import BadgeIcon from "@mui/icons-material/Badge";
 import AuthContext from "@/context/AuthContext";
 import UsuarioContext from "@/context/UsuarioContext";
-import { getImageSrc } from '@/helpers/imageHelper';
+import { getImageSrc } from "@/helpers/imageHelper";
+import { AuthContextValue } from "@/types/AuthContextValue";
+import { UsuariosContextValue } from "@/types/UsuariosContextValue";
 
 const navLinks = [
   {
@@ -43,10 +45,10 @@ const navLinks = [
   },
 ];
 
-const NavListDrawer = ({ onLinkClick }) => {
+const NavListDrawer = ({ onLinkClick }: { onLinkClick: () => void }) => {
   const navigate = useNavigate();
-  const { authTokens } = useContext(AuthContext);
-  const { user } = useContext(UsuarioContext);
+  const { authTokens } = useContext(AuthContext) as AuthContextValue;
+  const { user } = useContext(UsuarioContext) as UsuariosContextValue;
 
   return (
     <div>
@@ -61,10 +63,18 @@ const NavListDrawer = ({ onLinkClick }) => {
               }}
               disablePadding
             >
-              <ListItemButton onClick={() => {navigate("/perfil")}}>
+              <ListItemButton
+                onClick={() => {
+                  navigate("/perfil");
+                }}
+              >
                 <Box
                   component="img"
-                  src={ authTokens && user?.imagen ? getImageSrc(user?.imagen) : perfilDefault}
+                  src={
+                    authTokens && user?.imagen
+                      ? getImageSrc(user?.imagen)
+                      : perfilDefault
+                  }
                   alt=""
                   sx={{
                     borderRadius: "50%",
@@ -91,10 +101,10 @@ const NavListDrawer = ({ onLinkClick }) => {
                   <ListItemIcon
                     sx={{ color: "black", fontSize: { xs: 14, md: 16 } }}
                   >
-                    {item.icon === "home" ? <HomeIcon /> : item.icon}
+                    {typeof item.icon === "string" ? <HomeIcon /> : item.icon}
                   </ListItemIcon>
                   <ListItemText
-                    style={{ color: "black", fontSize: { xs: 12, md: 16 } }}
+                    sx={{ color: "black", fontSize: { xs: 12, md: 16 } }}
                   >
                     {item.title}
                   </ListItemText>

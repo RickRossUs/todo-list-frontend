@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Box, Button, Modal, Typography } from '@mui/material'
 
 const Confirmacion = () => {

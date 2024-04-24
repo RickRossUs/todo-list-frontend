@@ -1,18 +1,22 @@
-import { useEffect, useContext, useState } from "react";
+import { useEffect, useState } from "react";
+import { AxiosResponse } from 'axios';
 import { Box, Typography } from "@mui/material";
 import "@/assets/css/Producto.css";
 import { useNavigate } from "react-router-dom";
 import { fetchGetProductos } from "@/services/ProductosService";
+import { Producto } from "@/types/Producto";
+import { OffsetResponse } from "@/types/OffsetResponse";
+
 const ProductosMasVendidos = () => {
   const navigate = useNavigate();
-  const [productos, setProductos] = useState([]);
+  const [productos, setProductos] = useState<Array<Producto>>([]);
 
   useEffect(() => {
     const fetchUsuario = async () => {
       try {
-        const response = await fetchGetProductos("", 5)
+        const response: AxiosResponse<OffsetResponse> = await fetchGetProductos("", 0, 0, 5, 0)
 
-        setProductos(JSON.parse(response).results);
+        setProductos(response.data.results);
       } catch (error) {
         console.error("Error fetching products:", error);
       }
@@ -58,7 +62,7 @@ const ProductosMasVendidos = () => {
                 height: { xs: "50%" },
               }}
             >
-              {productos.map((producto) => (
+              {productos?.map((producto) => (
                 <Box
                   className="tarjeta"
                   key={producto.id}
@@ -120,7 +124,6 @@ const ProductosMasVendidos = () => {
             >
               <Typography
                 component="a"
-                variant="a"
                 sx={{
                   textDecoration: "none",
                   color: "black",

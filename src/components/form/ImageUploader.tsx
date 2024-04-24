@@ -1,6 +1,6 @@
-import React from "react";
-import { Box, TextField, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { getImageSrc } from '@/helpers/imageHelper';
+import { ImageUploaderProps } from "@/types/ImageUploaderProps";
 
 const ImageUploader = ({
   imagen,
@@ -9,13 +9,14 @@ const ImageUploader = ({
   setImage,
   register,
   errors,
-}) => {
+}: ImageUploaderProps) => {
   return (
     <form
       className="form-img-add"
-      onClick={() => document.querySelector(".input-img").click()}
-      onChange={({ target: { files } }) => {
-        files[0] && setFileName(files[0].name);
+      onClick={() => (document.querySelector(".input-img") as HTMLInputElement)?.click()}
+      onChange={(event) => {
+        const { files } = event.target as HTMLInputElement;
+        files?.[0] && setFileName(files[0].name);
         if (files) {
           setImage(URL.createObjectURL(files[0]));
         }
@@ -34,7 +35,7 @@ const ImageUploader = ({
       {imagen ? (
         <Box
           component="img"
-          src={imagen}
+          src={getImageSrc(imagen)}
           sx={{
             width: "100%",
             height: "250px",

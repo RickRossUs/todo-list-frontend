@@ -1,4 +1,3 @@
-import React from 'react'
 import Portada from '@/components/home/Portada'
 import Navbar from '@/components/header/Navbar'
 import SobreNosotros from '@/components/sobre/SobreNosotros'

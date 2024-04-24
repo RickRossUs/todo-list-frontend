@@ -1,17 +1,17 @@
-import React from "react";
 import { Controller } from "react-hook-form";
 import { RadioGroup, FormControlLabel, Radio } from "@mui/material";
+import { CInputChipProps } from "@/types/CInputChipProps";
 
 const CInputChip = ({
-  name,
+  // name,
   control,
-  label,
-  rules,
+  // label,
+  // rules,
   errors,
   lista,
   checked,
   setChecked,
-}) => (
+}: CInputChipProps) => (
   <div>
     <Controller
       name="categoria"

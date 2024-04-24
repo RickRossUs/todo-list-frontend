@@ -1,20 +1,20 @@
-import { useState, useContext } from "react";
+import { useState, useContext, MouseEvent } from "react";
 import { Box, Button, Divider, Menu, MenuItem } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import "@/assets/css/Perfil.css";
 import AuthContext from "@/context/AuthContext";
 import UsuarioContext from "@/context/UsuarioContext";
-import ProductosContext from '@/context/ProductosContext';
 import { useNavigate } from "react-router-dom";
+import { AuthContextValue } from "@/types/AuthContextValue";
+import { UsuariosContextValue } from "@/types/UsuariosContextValue";
 
 const MenuPerfil = () => {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const { logoutUsuario } = useContext(AuthContext);
-  const { deleteUser } = useContext(UsuarioContext);
-  const { setEsFavorito } = useContext(ProductosContext);
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const { logoutUsuario } = useContext(AuthContext) as AuthContextValue;
+  const { deleteUser } = useContext(UsuarioContext) as UsuariosContextValue;
   const navigate = useNavigate();
 
-  const handleMenu = (event) => {
+  const handleMenu = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
 

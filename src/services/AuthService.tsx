@@ -7,20 +7,11 @@ const axiosAuth = axios.create({
   },
 });
 
-axiosAuth.interceptors.response.use(
-  function (response) {
-    return JSON.stringify(response.data);
-  },
-  function (error) {
-    return Promise.reject(error);
-  }
-);
-
-export const fetchLogin = (credentials) => {
+export const fetchLogin = (credentials: FormData) => {
   return axiosAuth.post("login", credentials);
 };
 
-export const fetchUpdateToken = (refreshToken) => {
+export const fetchUpdateToken = (refreshToken: string) => {
   return axiosAuth.post("token/refresh/", {
     refresh: refreshToken,
   });

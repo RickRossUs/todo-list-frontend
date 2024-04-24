@@ -1,30 +1,25 @@
-import React, { useState, useContext } from "react";
-import {
-  Box,
-  Button,
-  Stack,
-  Paper,
-  Typography,
-} from "@mui/material";
+import { useState, useContext } from "react";
+import { Box, Button, Stack, Paper, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import AuthContext from "@/context/AuthContext";
+import AlertContext from "@/context/AlertContext";
 import UsuarioContext from "@/context/UsuarioContext";
 import Loading from "@/components/snipper/loading";
 import CInputField from "@/components/form/CInputField";
 import { LoginInformacion } from "@/forms/LoginInformacion";
 import "./Login.css";
+import { AuthContextValue } from "@/types/AuthContextValue";
+import { UsuariosContextValue } from "@/types/UsuariosContextValue";
+import { AlertContextValue } from "@/types/AlertContextValue";
 
 const Login = () => {
-  const [values, setValues] = useState({
-    user: "",
-    password: "",
-  });
 
   const navigate = useNavigate();
-  const { loginUsuario } = useContext(AuthContext);
-  const { getPerfil } = useContext(UsuarioContext);
-  const [isLoading, setIsLoading] = useState(false);
+  const { loginUsuario } = useContext(AuthContext) as AuthContextValue;
+  const { getPerfil } = useContext(UsuarioContext) as UsuariosContextValue;
+  const { showAlert } = useContext(AlertContext) as AlertContextValue;
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const {
     handleSubmit,
@@ -32,7 +27,7 @@ const Login = () => {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = async (data) => {
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     setIsLoading(true);
     try {
       const token = await loginUsuario(data);
@@ -43,7 +38,7 @@ const Login = () => {
         console.error("Error al autenticar al usuario");
       }
     } catch (error) {
-      console.error("Error al autenticar al usuario:", error);
+      showAlert("Usuario incorrecto", "error");
     } finally {
       setIsLoading(false);
     }
@@ -80,7 +75,7 @@ const Login = () => {
           <Box
             className="lateral_login"
             sx={{
-              width: { xs: "100%", md: "40%" },
+              width: { xs: "100%", md: "50%" },
               height: { xs: "50vh", md: "100%" },
               borderRadius: 5,
             }}
@@ -89,19 +84,15 @@ const Login = () => {
             component="form"
             className="form-log"
             onSubmit={handleSubmit(onSubmit)}
-            sx={{ p: 2, width: { xs: "100%", md: "40%" } }}
+            sx={{ p: 5, width: { xs: "100%", md: "50%" } }}
           >
             <Typography
               variant="h4"
               sx={{
                 color: { xs: "white", md: "black" },
                 fontSize: { xs: "28px", md: "30px" },
-                position: { xs: "absolute", md: "static" },
-                top: "20%",
-                left: "50%",
-                transform: "translate(-50%,-50%)",
-                zIndex: 50,
-                ml: 20,
+                textAlign: "center",
+                mb: 2,
               }}
             >
               Autenticarme
@@ -113,11 +104,11 @@ const Login = () => {
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                width: "90%",
               }}
             >
               {LoginInformacion.map((field) => (
                 <CInputField
+                  key={field.name}
                   name={field.name}
                   control={control}
                   label={field.label}
@@ -153,7 +144,9 @@ const Login = () => {
                 </Button>
               </Box>
             </Stack>
-            <Typography sx={{ fontSize: { xs: "12px" } }}>
+            <Typography
+              sx={{ fontSize: { xs: "12px" }, mt: 2, textAlign: "center" }}
+            >
               No tienes una cuenta?
               <Typography
                 component="a"

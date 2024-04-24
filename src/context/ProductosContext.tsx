@@ -1,94 +1,97 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
-import { useLocation } from "react-router-dom";
+import { createContext, useState, useEffect, ReactNode } from "react";
+import { AxiosResponse } from "axios";
+import { Producto } from "../types/Producto";
+import { Categoria } from "../types/Categoria";
 import {
   fetchGetProductos,
   fetchGetProducto,
   fetchGetCategorias,
-  fetchFilterProductosByCategoria,
   fetchPostProducto,
   fetchUpdateProducto,
   fetchEliminarProducto,
-  fetchGetFavoritos,
 } from "@/services/ProductosService";
+import { fetchGetFavoritos } from "@/services/FavoritosService";
+import { ProductosContextValue } from "@/types/ProductosContextValue ";
+import { OffsetResponse } from "@/types/OffsetResponse";
 
-const ProductosContext = createContext();
+const ProductosContext = createContext<ProductosContextValue | null>(null);
 
 export default ProductosContext;
 
-export const ProductosProvider = ({ children }) => {
-  const [productos, setProductos] = useState([]);
-  const [categorias, setCategorias] = useState([]);
-  const [selectedCategoria, setSelectedCategoria] = useState(0);
-  const [esFavorito, setEsFavorito] = useState(false);
-  const location = useLocation();
+export const ProductosProvider = ({ children }: { children: ReactNode }) => {
+  const [productos, setProductos] = useState<Array<Producto>>([]);
+  const [totalProductos, setTotalProductos] = useState<number>(0);
+  const [categorias, setCategorias] = useState<Array<Categoria>>([]);
+  const [selectedCategoria, setSelectedCategoria] = useState<number>(0);
+  const [esFavorito, setEsFavorito] = useState<boolean>(false);
 
-  const getProductos = async (search, limit, offset) => {
-    let response = await fetchGetProductos(search, limit, offset);
-    if (offset && offset !== 0)
-      setProductos((prevProductos) => [
-        ...prevProductos,
-        ...JSON.parse(response).results,
-      ]);
-    else setProductos(JSON.parse(response).results);
-    setSelectedCategoria(0);
-  };
-
-  const getProducto = async (productId) => {
-    try {
-      const response = await fetchGetProducto(productId);
-      return JSON.parse(response);
-    } catch (error) {
-      console.error("Error al obtener el producto:", error);
-    }
-  };
-
-  const getCategorias = async (userId) => {
-    const response = await fetchGetCategorias(userId);
-    setCategorias(JSON.parse(response));
-  };
-
-  const filterProductosByCategoria = async (
-    categoriaId,
-    usuarioId = 0,
-    offset
+  const getProductos = async (
+    search: string = "",
+    categoriaId: number = 0,
+    usuarioId: number = 0,
+    limit: number = 20,
+    offset: number = 0
   ) => {
-    let response = await fetchFilterProductosByCategoria(
+    let response: AxiosResponse<OffsetResponse> = await fetchGetProductos(
+      search,
       categoriaId,
       usuarioId,
+      limit,
       offset
     );
     if (offset && offset !== 0)
       setProductos((prevProductos) => [
         ...prevProductos,
-        ...JSON.parse(response).results,
+        ...response.data.results,
       ]);
-    else setProductos(JSON.parse(response).results);
-    setSelectedCategoria(categoriaId || 0);
+    else setProductos(response.data.results);
+    setTotalProductos(response.data.count);
+    setSelectedCategoria(categoriaId);
   };
 
-  const postProducto = async (formData) => {
+  const getProducto = async (productId: number) => {
+    try {
+      const response: AxiosResponse<Producto> = await fetchGetProducto(
+        productId
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error al obtener el producto:", error);
+    }
+  };
+
+  const getCategorias = async (userId: number) => {
+    const response: AxiosResponse<Categoria[]> = await fetchGetCategorias(
+      userId
+    );
+    setCategorias(response.data);
+  };
+
+  const postProducto = async (formData: FormData) => {
     const response = await fetchPostProducto(formData);
-    if (response) {
-      getProductos();
-    }
+    if (response) return true;
+    else return false;
   };
 
-  const updateProducto = async (formData, productId) => {
+  const updateProducto = async (formData: FormData, productId: number) => {
     const response = await fetchUpdateProducto(formData, productId);
-    if (response) {
-      getProductos();
-    }
+    if (response) return true;
+    else return false;
   };
 
-  const eliminarProducto = async (productId) => {
-    const response = await fetchEliminarProducto(productId);
+  const eliminarProducto = async (productId: number) => {
+    await fetchEliminarProducto(productId);
     const productosActualizados = productos?.filter(
       (producto) => producto.id !== productId
     );
     setProductos(productosActualizados);
   };
 
-  const toggleFavorito = (productoId, favoritoId, isFavorito) => {
+  const toggleFavorito = (
+    productoId: number,
+    favoritoId: number,
+    isFavorito: boolean
+  ) => {
     setProductos((prevProductos) =>
       prevProductos.map((producto) =>
         producto.id === productoId
@@ -104,19 +107,35 @@ export const ProductosProvider = ({ children }) => {
     );
   };
 
-  const getFavoritos = async (nombre, categoriaId, offset) => {
-    const response = await fetchGetFavoritos(nombre, categoriaId, offset);
-    setProductos(JSON.parse(response).map((item) => item.producto));
+  const getFavoritos = async (
+    nombre: string = "",
+    categoriaId: number = 0,
+    offset: number = 0
+  ) => {
+    const response: AxiosResponse<OffsetResponse> = await fetchGetFavoritos(
+      nombre,
+      categoriaId,
+      offset
+    );
+    if (offset && offset !== 0)
+      setProductos((prevProductos) => [
+        ...prevProductos,
+        ...response.data.results.map((item) => item.producto),
+      ]);
+    else setProductos(response.data.results.map((item) => item.producto));
+    setTotalProductos(response.data.count);
     setSelectedCategoria(categoriaId || 0);
   };
 
   useEffect(() => {
-    getCategorias();
+    getCategorias(0);
   }, []);
 
-  const value = {
+  const value: ProductosContextValue = {
     productos,
     setProductos,
+    totalProductos,
+    setTotalProductos,
     categorias,
     setCategorias,
     selectedCategoria,
@@ -124,7 +143,6 @@ export const ProductosProvider = ({ children }) => {
     getProductos,
     getProducto,
     getCategorias,
-    filterProductosByCategoria,
     postProducto,
     updateProducto,
     eliminarProducto,

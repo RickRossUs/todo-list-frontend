@@ -1,23 +1,28 @@
-import { useState, useContext } from "react";
-import { Grid, Paper, Box, Typography, TextField, Button } from "@mui/material";
-import { useForm, Controller } from "react-hook-form";
+import { useContext } from "react";
+import { Grid, Paper, Box, Typography, Button } from "@mui/material";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import "./Register.css";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "@/context/AuthContext";
 import UsuarioContext from "@/context/UsuarioContext";
+import AlertContext from "@/context/AlertContext";
 import { RegisterInformacion } from "@/forms/RegisterInformacion";
 import CInputField from "@/components/form/CInputField";
+import { AuthContextValue } from "@/types/AuthContextValue";
+import { UsuariosContextValue } from "@/types/UsuariosContextValue";
+import { AlertContextValue } from "@/types/AlertContextValue";
+import { AxiosResponse } from "axios";
+import type { Usuario } from "@/types/Usuario";
 
 const Register = () => {
   const navigate = useNavigate();
-  const { loginUsuario } = useContext(AuthContext);
-  const { registerUser } = useContext(UsuarioContext);
+  const { loginUsuario } = useContext(AuthContext) as AuthContextValue;
+  const { registerUser } = useContext(UsuarioContext) as UsuariosContextValue;
+  const { showAlert } = useContext(AlertContext) as AlertContextValue;
 
   const {
-    register,
     handleSubmit,
     control,
-    setValue,
     formState: { errors },
     watch,
   } = useForm();
@@ -30,7 +35,7 @@ const Register = () => {
         ...field,
         rules: {
           ...field.rules,
-          validate: (value) =>
+          validate: (value: string) =>
             value === password || "Las contraseñas no coinciden",
         },
       };
@@ -38,16 +43,25 @@ const Register = () => {
     return field;
   });
 
-  const createUser = async (data) => {
-    const register = await registerUser(data);
-    if (register) {
-      const login = await loginUsuario({
-        username: data.username,
-        password: data.password,
-      });
-      if (login) {
-        navigate("/detalles-perfil");
+  const createUser: SubmitHandler<FieldValues> = async (data) => {
+    try {
+      const formData = new FormData();
+      formData.append("username", data.username);
+      formData.append("password", data.password);
+      formData.append("email", data.email);
+
+      const register: boolean = await registerUser(formData);
+      if (register) {
+        const login: AxiosResponse<Usuario> = await loginUsuario({
+          username: data.username,
+          password: data.password,
+        });
+        if (login) {
+          navigate("/detalles-perfil");
+        }
       }
+    } catch (error) {
+      showAlert("Existe un usuario con ese nombre", "error");
     }
   };
 

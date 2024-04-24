@@ -1,4 +1,5 @@
-import { useEffect, useState, useContext } from "react";
+import { useContext, SyntheticEvent } from "react";
+import { AxiosResponse } from 'axios';
 import { Rating } from "@mui/material";
 import AuthContext from "@/context/AuthContext";
 import {
@@ -7,24 +8,26 @@ import {
   fetchPatchSatisfaccion,
   fetchDeleteSatisfaccion,
 } from "@/services/SatisfaccionesService";
+import { AuthContextValue } from "@/types/AuthContextValue";
+import type { Satisfaccion } from "@/types/Satisfaccion";
 
-const Satisfaccion = ({ value, productoId }) => {
-  const { authTokens } = useContext(AuthContext);
+const Satisfaccion = ({ value, productoId }: { value: number, productoId: number }) => {
+  const { authTokens } = useContext(AuthContext) as AuthContextValue;
 
-  const handleSatisfaccion = async (event, newValue) => {
+  const handleSatisfaccion = async (_: SyntheticEvent<Element, Event>, newValue:number | null) => {
     if (authTokens) {
       try {
-        const satisfacciones = await fetchGetSatisfacciones();
-        const satisfaccionExistente = satisfacciones.find(
+        const response: AxiosResponse<Array<Satisfaccion>> = await fetchGetSatisfacciones();
+        const satisfaccionExistente = response.data.find(
           (item) => item.producto.id === productoId
         );
 
         if (newValue === 0 && satisfaccionExistente) {
           await fetchDeleteSatisfaccion(satisfaccionExistente.id);
         } else if (newValue !== 0 && !satisfaccionExistente) {
-          await fetchPostSatisfaccion(productoId, newValue);
+          await fetchPostSatisfaccion(productoId, newValue || 0);
         } else if (newValue !== 0 && satisfaccionExistente) {
-          await fetchPatchSatisfaccion(satisfaccionExistente.id, newValue);
+          await fetchPatchSatisfaccion(satisfaccionExistente.id, newValue || 0);
         }
       } catch (error) {
         console.error("Error manejando la satisfacción:", error);

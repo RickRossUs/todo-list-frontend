@@ -1,24 +1,24 @@
 import { useContext, useState } from "react";
 import CarritoContext from "@/context/CarritoContext";
-import { useNavigate } from "react-router-dom";
 import CloseIcon from "@mui/icons-material/Close";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { Box, Badge, Typography, List, Paper, Divider } from "@mui/material";
 import ItemCarrito from "./ItemCarrito";
+import { CarritoContextValue } from "@/types/CarritoContextValue";
+import { useNavigate } from "react-router-dom";
+import PaymentIcon from "@mui/icons-material/Payment";
 
 const PaperCarrito = () => {
-  const [active, setActive] = useState(false);
-  const [cant, setCant] = useState(0);
-  const [invisible, setInvisible] = useState(false);
+  const [active, setActive] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  const { carrito } = useContext(CarritoContext);
+  const { carrito } = useContext(CarritoContext) as CarritoContextValue;
 
-  const totalPrice = carrito.reduce((accumulator, product) => {
+  const totalPrice = carrito?.reduce((accumulator, product) => {
     return accumulator + product.producto.precio * product.cantidad;
   }, 0);
 
-  const totalCantidad = carrito.reduce((accumulator, product) => {
+  const totalCantidad = carrito?.reduce((accumulator, product) => {
     return (accumulator += product.cantidad);
   }, 0);
 
@@ -35,7 +35,7 @@ const PaperCarrito = () => {
           color="error"
           variant="standard"
           anchorOrigin={{ vertical: "top", horizontal: "right" }}
-          invisible={invisible}
+          invisible={false}
           sx={{ width: "25px", m: "0 5px 0 20px" }}
           badgeContent={totalCantidad}
           showZero={false}
@@ -67,7 +67,7 @@ const PaperCarrito = () => {
           borderColor: "white",
         }}
       >
-        {carrito ? (
+        {carrito?.length > 0 ? (
           <>
             <List
               className="producto"
@@ -79,24 +79,53 @@ const PaperCarrito = () => {
               }}
             >
               {carrito.map((product) => (
-                <ItemCarrito key={product.id} product={product} />
+                <ItemCarrito key={product.id} product={product} modal={false} />
               ))}
             </List>
             <Divider sx={{ width: "90%", mb: 2 }} />
-            <Box
-              className="total-contenedor"
-              sx={{
-                bgcolor: "lightgreen",
-                width: { xs: "100%", md: "60%" },
-                p: 1,
-                borderRadius: 2,
-                display: "flex",
-                justifyContent: "center",
-                gap: 2,
-              }}
-            >
-              <Typography sx={{}}>Total:</Typography>
-              <Typography>{totalPrice}</Typography>
+            <Box sx={{display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%"}}>
+              <Box
+                className="total-contenedor"
+                sx={{
+                  bgcolor: "lightgreen",
+                  width: { xs: "100%", md: "60%" },
+                  p: 1,
+                  borderRadius: 2,
+                  display: "flex",
+                  justifyContent: "center",
+                  gap: 2,
+                  ml:2,
+                }}
+              >
+                <Typography sx={{}}>Total:</Typography>
+                <Typography>{totalPrice}</Typography>
+              </Box>
+              <Box
+                onClick={() => {
+                  navigate("/comprar");
+                }}
+                component="i"
+                sx={{
+                  cursor: "pointer",
+                  bgcolor: "red",
+                  color: "white",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  borderRadius: 2,
+                  height: { xs: "40px", md: "40px" },
+                  width: { xs: "20px", md: "20px" },
+                  p: "0 20px",
+                  mr:2,
+                  fontSize: {
+                    xs: "10",
+                    md: "16px",
+                    height: { xs: "1rem" },
+                  },
+                }}
+              >
+                <PaymentIcon />
+              </Box>
             </Box>
           </>
         ) : (

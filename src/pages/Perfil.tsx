@@ -1,32 +1,37 @@
 import { useState, useContext, useEffect } from "react";
-import { AppBar, Box, Toolbar, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import "@/assets/css/Perfil.css";
 import Galeria from "@/components/perfil/Galeria";
 import AgregarProducto from "@/components/producto/AgregarProducto";
 import Productos from "@/pages/Productos";
 import UsuarioContext from "@/context/UsuarioContext";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import perfilDefault from "@/assets/img/Perfil/png-clipart-user-profile-get-em-cardiovascular-disease-zingah-avatar-miscellaneous-white.png";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ProductosContext from "@/context/ProductosContext";
 import { getImageSrc } from "@/helpers/imageHelper";
 import { fetchGetPerfil } from "@/services/UsuariosService";
 import AppBarComponent from "@/components/perfil/AppBarComponent";
+import { ProductosContextValue } from "@/types/ProductosContextValue ";
+import { UsuariosContextValue } from "@/types/UsuariosContextValue";
+import { AxiosResponse } from "axios";
+import type { Usuario } from "@/types/Usuario";
 
 const Perfil = () => {
-  const { user } = useContext(UsuarioContext);
-  const navigate = useNavigate();
+  const { user } = useContext(UsuarioContext) as UsuariosContextValue;
   const { userId } = useParams();
-  const [usuario, setUsuario] = useState([]);
-  const { productos, setProductos } = useContext(ProductosContext);
+  const [usuario, setUsuario] = useState<Usuario | null>(null);
+  const { setProductos } = useContext(
+    ProductosContext
+  ) as ProductosContextValue;
 
   useEffect(() => {
     const getUsuario = async () => {
-      const response = await fetchGetPerfil(userId);
+      const response: AxiosResponse<Usuario> = await fetchGetPerfil(
+        Number(userId)
+      );
       if (response) {
-        setUsuario(JSON.parse(response));
-        setProductos(JSON.parse(response).productos);
+        setUsuario(response.data);
+        setProductos(response.data.productos);
       }
     };
 
@@ -34,13 +39,16 @@ const Perfil = () => {
       getUsuario();
     } else {
       setUsuario(user);
-      setProductos(user?.productos);
+      setProductos(user?.productos || []);
     }
   }, [user, userId]);
 
   return (
     <div>
-      <AppBarComponent userId={userId} username={usuario?.username} />
+      <AppBarComponent
+        userId={Number(userId)}
+        username={usuario?.username || ""}
+      />
       <Box
         className="portada-perfil"
         sx={{
@@ -89,7 +97,6 @@ const Perfil = () => {
         <Typography
           color="white"
           component="h4"
-          variant="p"
           sx={{
             alignItems: "center",
             color: "grey",
@@ -104,13 +111,13 @@ const Perfil = () => {
         </Typography>
       </Box>
 
-      {userId === undefined ? (
+      {userId ? (
+        <Productos />
+      ) : (
         <div>
           <AgregarProducto />
           <Galeria />
         </div>
-      ) : (
-        <Productos />
       )}
     </div>
   );

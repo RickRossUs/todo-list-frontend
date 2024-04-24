@@ -1,4 +1,3 @@
-import React from "react";
 import { Box, Card, Container, Typography } from "@mui/material";
 import angelinaImg from "../../assets/img/Perfil/angelina.jpg";
 import johnImg from "../../assets/img/Perfil/john.jpg";

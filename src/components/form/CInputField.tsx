@@ -1,24 +1,35 @@
-import React, { useState } from "react";
-import { Controller } from "react-hook-form";
+import { useState } from "react";
+import { Controller, FieldValues } from "react-hook-form";
 import { TextField, InputAdornment, IconButton } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { InputFieldProps } from "@/types/InputFieldProps";
 
-const InputField = ({ name, control, label, type, rules, errors }) => {
+const InputField = <T extends FieldValues>({
+  name,
+  control,
+  label,
+  type,
+  rules,
+  errors,
+  defaultValue,
+}: InputFieldProps<T>) => {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleMouseDownPassword = (event) => {
+  const handleMouseDownPassword = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
     event.preventDefault();
   };
 
   return (
     <Controller
       name={name}
-      defaultValue=""
       control={control}
+      defaultValue={defaultValue}
       rules={rules}
       render={({ field }) => (
         <TextField
@@ -38,7 +49,9 @@ const InputField = ({ name, control, label, type, rules, errors }) => {
               <InputAdornment position="end">
                 {type === "password" && (
                   <IconButton
-                    aria-label="toggle password visibility"
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
                     onClick={handleClickShowPassword}
                     onMouseDown={handleMouseDownPassword}
                     color="success"

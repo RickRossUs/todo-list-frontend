@@ -1,26 +1,47 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
+import {
+  createContext,
+  useState,
+  useEffect,
+  useContext,
+  ReactNode,
+} from "react";
+import { AxiosResponse } from "axios";
 import {
   fetchGetCarrito,
+  fetchBuyCarrito,
   fetchPostCarrito,
   fetchPatchCarrito,
   fetchDeleteCarrito,
 } from "@/services/CarritoService";
 import AuthContext from "@/context/AuthContext";
+import { Carrito } from "@/types/Carrito";
+import { CarritoContextValue } from "@/types/CarritoContextValue";
+import { AuthContextValue } from "@/types/AuthContextValue";
 
-const CarritoContext = createContext();
+const CarritoContext = createContext<CarritoContextValue | null>(null);
 
 export default CarritoContext;
 
-export const CarritoProvider = ({ children }) => {
-  const [carrito, setCarrito] = useState([]);
-  const { authTokens } = useContext(AuthContext);
+export const CarritoProvider = ({ children }: { children: ReactNode }) => {
+  const [carrito, setCarrito] = useState<Array<Carrito>>([]);
+  const { authTokens } = useContext(AuthContext) as AuthContextValue;
 
   const getCarrito = async () => {
-    const response = await fetchGetCarrito();
-    setCarrito(JSON.parse(response));
+    const response: AxiosResponse<Carrito[]> = await fetchGetCarrito();
+    setCarrito(response.data);
   };
 
-  const buyCarrito = async (productoId: number) => {
+  const buyCarrito = async (carritoId: number) => {
+    try{
+      await fetchBuyCarrito(carritoId);
+      setCarrito([]);
+      return true
+    } catch (err) {
+      console.log(err);
+      return false
+    }
+  };
+  const addCarrito = async (productoId: number) => {
     const existingItem = carrito.find(
       (item) => item.producto.id === productoId
     );
@@ -28,12 +49,12 @@ export const CarritoProvider = ({ children }) => {
     if (existingItem) {
       await plusCarrito(existingItem.id, true);
     } else {
-      const response = await fetchPostCarrito({
-        producto: productoId,
-        cantidad: 1,
-      });
+      const formData = new FormData();
+      formData.append("producto", productoId.toString());
+      formData.append("cantidad", "1");
+      const response: AxiosResponse<Carrito> = await fetchPostCarrito(formData);
 
-      setCarrito([...carrito, JSON.parse(response)]);
+      setCarrito([...carrito, response.data]);
     }
   };
 
@@ -53,25 +74,28 @@ export const CarritoProvider = ({ children }) => {
       if (updatedItem.cantidad === 0) {
         removeFromCarrito(carritoId);
       } else {
-        await fetchPatchCarrito(carritoId, { cantidad: updatedItem.cantidad });
+        const formData = new FormData();
+        formData.append("cantidad", updatedItem.cantidad.toString());
+        await fetchPatchCarrito(carritoId, formData);
       }
     }
   };
 
   const removeFromCarrito = async (carritoId: number) => {
-    const response = await fetchDeleteCarrito(carritoId);
+    await fetchDeleteCarrito(carritoId);
     setCarrito((prevCarrito) =>
       prevCarrito.filter((item) => item.id !== carritoId)
     );
   };
 
   const value = {
-    carrito: carrito,
-    setCarrito: setCarrito,
-    getCarrito: getCarrito,
-    buyCarrito: buyCarrito,
-    plusCarrito: plusCarrito,
-    removeFromCarrito: removeFromCarrito,
+    carrito,
+    setCarrito,
+    getCarrito,
+    buyCarrito,
+    addCarrito,
+    plusCarrito,
+    removeFromCarrito,
   };
 
   useEffect(() => {

@@ -6,16 +6,16 @@ import CardProducto from "@/components/producto/CardProducto";
 import Categorias from "@/components/producto/Categorias";
 import ProductosContext from "@/context/ProductosContext";
 import { useLocation, useParams } from "react-router-dom";
+import { ProductosContextValue } from "@/types/ProductosContextValue ";
 
 const Productos = () => {
   const {
     productos,
     getProductos,
     selectedCategoria,
-    filterProductosByCategoria,
     setEsFavorito,
     getFavoritos,
-  } = useContext(ProductosContext);
+  } = useContext(ProductosContext) as ProductosContextValue;
   const location = useLocation();
   const { userId, favorito } = useParams();
   const [cantProductos, setCantProductos] = useState(0);
@@ -23,14 +23,8 @@ const Productos = () => {
 
   useEffect(() => {
     if (favorito) getFavoritos("", selectedCategoria, cantProductos);
-    else if (selectedCategoria !== 0)
-      filterProductosByCategoria(
-        selectedCategoria,
-        location.pathname.includes("/perfil") ? userId : 0,
-        cantProductos
-      );
     else if (cantProductos > 0 && !location.pathname.includes("/perfil")) {
-      getProductos("", 20, cantProductos);
+      getProductos("", selectedCategoria, location.pathname.includes("/perfil") ? Number(userId) : 0, 20, cantProductos);
     }
   }, [pantallaAnterior]);
 
@@ -64,8 +58,6 @@ const Productos = () => {
   useEffect(() => {
     setCantProductos(0);
     if (favorito) {
-      // setTimeout(() => {
-      // }, 500);
       getFavoritos();
       setEsFavorito(true);
     } else {

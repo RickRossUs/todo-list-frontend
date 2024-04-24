@@ -1,4 +1,3 @@
-import React from "react";
 import { Box, Container, Paper, Typography } from "@mui/material";
 import "./Servicios.css";
 
@@ -94,7 +93,7 @@ const Servicios = () => {
                 </Typography>
                 <Typography
                   className="servicios_info"
-                  variant="p"
+                  component="p"
                   sx={{ fontSize: { xs: 8, md: 20 } }}
                 >
                   {item.desc}

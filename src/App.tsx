@@ -7,7 +7,7 @@ import Router from "./router/Router";
 import "./App.css";
 import { ProductosProvider } from '@/context/ProductosContext';
 
-function App() {
+function App(): React.ReactElement {
   const CombinedProviders = combineProviders([
     AuthProvider,
     UsuarioProvider,

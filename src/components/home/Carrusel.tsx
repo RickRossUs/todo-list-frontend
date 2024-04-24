@@ -1,4 +1,3 @@
-import React from 'react'
 import { Box } from '@mui/material'
 import img1 from '@/assets/img/Fondos/Vegetable-Wallpaper-About-Murals.jpg'
 import img2 from '@/assets/img/Fondos/43118830681105a4c9691da8ed8cda0e.jpeg'

@@ -1,7 +1,8 @@
-import { useState, useEffect, useContext } from "react";
+import { useEffect, useContext } from "react";
 import { Box, Tab, Tabs } from "@mui/material";
 import ProductosContext from "@/context/ProductosContext";
 import { useLocation, useParams } from "react-router-dom";
+import { ProductosContextValue } from "../../types/ProductosContextValue ";
 
 const Categorias = () => {
   const {
@@ -9,25 +10,27 @@ const Categorias = () => {
     categorias,
     getCategorias,
     selectedCategoria,
-    setSelectedCategoria,
-    filterProductosByCategoria,
+    getProductos,
     esFavorito,
     getFavoritos,
-  } = useContext(ProductosContext);
+  } = useContext(ProductosContext) as ProductosContextValue;
   const location = useLocation();
   const { userId } = useParams();
 
-  const handleCategoria = (e, newValue) => {
+  const handleCategoria = (_: React.SyntheticEvent, newValue: number) => {
     if (esFavorito) getFavoritos("", newValue, 0);
     else
-      filterProductosByCategoria(
+      getProductos(
+        "",
         newValue,
-        location.pathname.includes("/perfil") ? userId : 0
+        location.pathname.includes("/perfil") ? Number(userId) : 0,
+        20,
+        0
       );
   };
 
   useEffect(() => {
-    if (location.pathname.includes("/perfil")) getCategorias(userId);
+    if (location.pathname.includes("/perfil")) getCategorias(Number(userId));
   }, [productos]);
 
   return (

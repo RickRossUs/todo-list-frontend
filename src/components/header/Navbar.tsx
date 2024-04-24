@@ -1,4 +1,4 @@
-import { useEffect, useContext, useState } from "react";
+import { useContext, useState } from "react";
 import {
   AppBar,
   Box,
@@ -15,17 +15,18 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "@/context/AuthContext";
 import UsuarioContext from "@/context/UsuarioContext";
+import { AuthContextValue } from "@/types/AuthContextValue";
+import { UsuariosContextValue } from "@/types/UsuariosContextValue";
 
 const navMenu = [
   { title: "Home", path: "", icon: <HomeIcon /> },
 ];
 
 const Navbar = () => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState<boolean>(false);
   const navigate = useNavigate();
-  const { authTokens, logoutUsuario } = useContext(AuthContext);
-  const { setUser } = useContext(UsuarioContext);
-  const [perfil, setPerfil] = useState([]);
+  const { authTokens, logoutUsuario } = useContext(AuthContext) as AuthContextValue;
+  const { setUser } = useContext(UsuarioContext) as UsuariosContextValue;
 
   const handleNavegation = () => {
     if (authTokens) {
@@ -88,7 +89,7 @@ const Navbar = () => {
         </Toolbar>
       </AppBar>
       <Drawer open={open} anchor="left" onClose={() => setOpen(false)} sx={{}}>
-        <NavListDrawer perfil={perfil[0]} onLinkClick={() => setOpen(false)} />
+        <NavListDrawer onLinkClick={() => setOpen(false)} />
       </Drawer>
     </div>
   );

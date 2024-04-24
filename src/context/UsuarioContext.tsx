@@ -1,52 +1,59 @@
-import { createContext, useState, useEffect, useContext } from "react";
-import { jwtDecode } from "jwt-decode";
+import { createContext, useState, useEffect, ReactNode } from "react";
+import { AxiosResponse } from "axios";
 import { useNavigate } from "react-router-dom";
+import { Usuario } from "../types/Usuario";
 import {
   fetchGetMyPerfil,
   fetchUpdatePerfil,
   fetchRegisterUsuario,
   fetchDeleteUsuario,
 } from "@/services/UsuariosService";
+import { UsuariosContextValue } from "@/types/UsuariosContextValue";
 
-const UsuarioContext = createContext();
+const UsuarioContext = createContext<UsuariosContextValue | null>(null);
 
 export default UsuarioContext;
 
-export const UsuarioProvider = ({ children }) => {
-  let [user, setUser] = useState(null);
+export const UsuarioProvider = ({ children }: { children: ReactNode }) => {
+  let [user, setUser] = useState<Usuario | null>(null);
   const navigate = useNavigate();
 
   const getPerfil = async () => {
-    const response = await fetchGetMyPerfil();
-    setUser(JSON.parse(response));
+    const response: AxiosResponse<Usuario> = await fetchGetMyPerfil();
+    setUser(response.data);
   };
 
-  const registerUser = async (usuario) => {
-    const response = await fetchRegisterUsuario(usuario)
+  const registerUser = async (usuario: FormData) => {
+    const response: AxiosResponse<Usuario> = await fetchRegisterUsuario(
+      usuario
+    );
 
     if (response) {
-      setUser(JSON.parse(response));
+      setUser(response.data);
       return true;
     } else {
-      alert("Something went wrong while logging in the user!");
+      console.log("Something went wrong while logging in the user!");
     }
     return false;
   };
 
-  const updateUser = async (formData) => {
-    const response = await fetchUpdatePerfil(user.id, formData)
+  const updateUser = async (formData: FormData) => {
+    const response: AxiosResponse<Usuario> = await fetchUpdatePerfil(
+      user?.id || 0,
+      formData
+    );
 
     if (response) {
-      setUser(JSON.parse(response));
-      navigate("/perfil");
+      setUser(response.data);
+      navigate(-1);
     } else {
-      console.error("Error al eliminar el usuario:", response.statusText);
+      console.error("Error al eliminar el usuario:", response);
     }
   };
 
   const deleteUser = async () => {
-    const response = await fetchDeleteUsuario(user.id)
-    return response
+    const response = await fetchDeleteUsuario(user?.id || 0);
+    return response;
   };
 
   let contextData = {
@@ -59,7 +66,10 @@ export const UsuarioProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    getPerfil();
+    const tokens = localStorage.getItem("authTokens")
+      ? JSON.parse(localStorage.getItem("authTokens") || "{}").access
+      : "";
+    if (tokens) getPerfil();
   }, []);
 
   return (

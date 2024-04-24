@@ -1,13 +1,7 @@
 import { useState, useEffect, useContext } from "react";
-import { useForm, Controller } from "react-hook-form";
-import {
-  Box,
-  Button,
-  Container,
-  RadioGroup,
-  Radio,
-  FormControlLabel,
-} from "@mui/material";
+// import { AxiosResponse } from "axios";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import { Box, Button, Container } from "@mui/material";
 import "@/assets/css/Perfil.css";
 import UsuarioContext from "@/context/UsuarioContext";
 import ProductosContext from "@/context/ProductosContext";
@@ -16,17 +10,20 @@ import { useParams } from "react-router-dom";
 import ImageUploader from "@/components/form/ImageUploader";
 import InputField from "@/components/form/CInputField";
 import CInputChip from "../components/form/CInputChip";
+import { UsuariosContextValue } from "@/types/UsuariosContextValue";
+import { ProductosContextValue } from "@/types/ProductosContextValue ";
+import type { Producto } from "@/types/Producto";
 
 const CrearProducto = () => {
-  const [imagen, setImage] = useState(null);
-  const [fileName, setFileName] = useState("No hay imagen");
-  const [checked, setChecked] = useState(null);
-  const { getPerfil } = useContext(UsuarioContext);
+  const [imagen, setImage] = useState<string | null>(null);
+  const [fileName, setFileName] = useState<string>("No hay imagen");
+  const [checked, setChecked] = useState<number>(0);
+  const { getPerfil } = useContext(UsuarioContext) as UsuariosContextValue;
   const navigate = useNavigate();
   const { productId } = useParams();
-  const [productData, setProductData] = useState({});
-  const { categorias, getProducto, postProducto, updateProducto } =
-    useContext(ProductosContext);
+  const { categorias, getProducto, postProducto, updateProducto } = useContext(
+    ProductosContext
+  ) as ProductosContextValue;
 
   const {
     register,
@@ -36,32 +33,39 @@ const CrearProducto = () => {
     formState: { errors },
   } = useForm();
 
-  const createProduct = async (data) => {
+  const createProduct: SubmitHandler<FieldValues> = async (data) => {
     const formData = new FormData();
-    formData.append("categoria", checked);
+    formData.append("categoria", checked.toString());
     formData.append("nombre", data.nombre);
     formData.append("descripcion", data.descripcion);
-    formData.append("precio", data.precio);
+    formData.append("precio", data.precio.toString());
     if (fileName !== "No hay imagen") {
       formData.append("imagen", data.imagen[0]);
     }
 
-    productId ? updateProducto(formData, productId) : postProducto(formData);
+    let response: boolean;
 
-    getPerfil();
-    navigate("/perfil");
+    productId
+      ? (response = await updateProducto(formData, Number(productId)))
+      : (response = await postProducto(formData));
+
+    if (response) {
+      getPerfil();
+      navigate("/perfil");
+    }
   };
 
   useEffect(() => {
     const fetchProduct = async () => {
-      const data = await getProducto(productId);
-      setProductData(data);
-      setValue("nombre", data?.nombre);
-      setValue("descripcion", data?.descripcion);
-      setValue("precio", data?.precio);
-      setValue("categoria", data?.categoria?.id);
-      setChecked(data?.categoria?.id);
-      setImage(data?.imagen);
+      const response: Producto = (await getProducto(
+        Number(productId)
+      )) as Producto;
+      setValue("nombre", response?.nombre);
+      setValue("descripcion", response?.descripcion);
+      setValue("precio", response?.precio);
+      setValue("categoria", response?.categoria?.id);
+      setChecked(response?.categoria?.id);
+      setImage(response?.imagen || null);
     };
 
     if (productId) {
@@ -95,7 +99,7 @@ const CrearProducto = () => {
             setImage={setImage}
             register={register}
             errors={errors}
-            setValue={setValue}
+            // setValue={setValue}
           />
           <form className="form-info-add">
             <Box
@@ -111,20 +115,25 @@ const CrearProducto = () => {
                 name="nombre"
                 control={control}
                 label="Nombre"
+                type="text"
                 rules={{ required: "Nombre es requerido" }}
                 errors={errors}
+                defaultValue={""}
               />
               <InputField
                 name="descripcion"
                 control={control}
                 label="Descripción"
+                type="text"
                 rules={{ required: "Descripción es requerida" }}
                 errors={errors}
+                defaultValue={""}
               />
             </Box>
             <Box>
               <CInputChip
                 name="categoria"
+                label="Categoria"
                 control={control}
                 rules={{ required: "Categoría es requerida" }}
                 errors={errors}
@@ -144,6 +153,7 @@ const CrearProducto = () => {
                 name="precio"
                 control={control}
                 label="Precio"
+                type="text"
                 rules={{
                   required: "Precio es requerido",
                   pattern: {
@@ -152,6 +162,7 @@ const CrearProducto = () => {
                   },
                 }}
                 errors={errors}
+                defaultValue={""}
               />
             </Box>
             <Box
