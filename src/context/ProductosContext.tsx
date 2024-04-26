@@ -11,7 +11,7 @@ import {
   fetchEliminarProducto,
 } from "@/services/ProductosService";
 import { fetchGetFavoritos } from "@/services/FavoritosService";
-import { ProductosContextValue } from "@/types/ProductosContextValue ";
+import { ProductosContextValue } from "@/types/ProductosContextValue";
 import { OffsetResponse } from "@/types/OffsetResponse";
 
 const ProductosContext = createContext<ProductosContextValue | null>(null);

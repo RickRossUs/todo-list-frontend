@@ -5,7 +5,7 @@ import {
 } from "@mui/material";
 import ProductosContext from "@/context/ProductosContext";
 import SearchIcon from "@mui/icons-material/Search";
-import { ProductosContextValue } from '../../types/ProductosContextValue ';
+import { ProductosContextValue } from '../../types/ProductosContextValue';
 
 const SearchProductos = () => {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);

@@ -6,7 +6,7 @@ import CardProducto from "@/components/producto/CardProducto";
 import Categorias from "@/components/producto/Categorias";
 import ProductosContext from "@/context/ProductosContext";
 import { useLocation, useParams } from "react-router-dom";
-import { ProductosContextValue } from "@/types/ProductosContextValue ";
+import { ProductosContextValue } from "@/types/ProductosContextValue";
 
 const Productos = () => {
   const {

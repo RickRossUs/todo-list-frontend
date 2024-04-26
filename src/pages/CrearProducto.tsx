@@ -11,7 +11,7 @@ import ImageUploader from "@/components/form/ImageUploader";
 import InputField from "@/components/form/CInputField";
 import CInputChip from "../components/form/CInputChip";
 import { UsuariosContextValue } from "@/types/UsuariosContextValue";
-import { ProductosContextValue } from "@/types/ProductosContextValue ";
+import { ProductosContextValue } from "@/types/ProductosContextValue";
 import type { Producto } from "@/types/Producto";
 
 const CrearProducto = () => {

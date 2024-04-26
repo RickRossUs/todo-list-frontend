@@ -6,7 +6,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
 import ProductosContext from "@/context/ProductosContext";
 import { getImageSrc } from "@/helpers/imageHelper";
-import { ProductosContextValue } from "@/types/ProductosContextValue ";
+import { ProductosContextValue } from "@/types/ProductosContextValue";
 
 const Galeria = () => {
   const navigate = useNavigate();

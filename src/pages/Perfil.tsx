@@ -11,7 +11,7 @@ import ProductosContext from "@/context/ProductosContext";
 import { getImageSrc } from "@/helpers/imageHelper";
 import { fetchGetPerfil } from "@/services/UsuariosService";
 import AppBarComponent from "@/components/perfil/AppBarComponent";
-import { ProductosContextValue } from "@/types/ProductosContextValue ";
+import { ProductosContextValue } from "@/types/ProductosContextValue";
 import { UsuariosContextValue } from "@/types/UsuariosContextValue";
 import { AxiosResponse } from "axios";
 import type { Usuario } from "@/types/Usuario";

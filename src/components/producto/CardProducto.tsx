@@ -14,7 +14,7 @@ import type { Producto } from "@/types/Producto";
 import { AuthContextValue } from "@/types/AuthContextValue";
 import { UsuariosContextValue } from "@/types/UsuariosContextValue";
 import { CarritoContextValue } from "@/types/CarritoContextValue";
-import { ProductosContextValue } from "@/types/ProductosContextValue ";
+import { ProductosContextValue } from "@/types/ProductosContextValue";
 
 const CardCarrito = ({ producto }: { producto: Producto }) => {
   const { authTokens } = useContext(AuthContext) as AuthContextValue;

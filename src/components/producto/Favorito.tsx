@@ -8,7 +8,7 @@ import {
   fetchDeleteFavorito,
 } from "@/services/FavoritosService";
 import { Es_Favorito } from "@/types/Es_Favorito";
-import { ProductosContextValue } from "@/types/ProductosContextValue ";
+import { ProductosContextValue } from "@/types/ProductosContextValue";
 import type { Favorito } from "@/types/Favorito";
 
 const Favorito = ({ productoId, favorito }: {productoId:number, favorito:Es_Favorito}) => {

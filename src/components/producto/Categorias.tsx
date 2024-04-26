@@ -2,7 +2,7 @@ import { useEffect, useContext } from "react";
 import { Box, Tab, Tabs } from "@mui/material";
 import ProductosContext from "@/context/ProductosContext";
 import { useLocation, useParams } from "react-router-dom";
-import { ProductosContextValue } from "../../types/ProductosContextValue ";
+import { ProductosContextValue } from "../../types/ProductosContextValue";
 
 const Categorias = () => {
   const {

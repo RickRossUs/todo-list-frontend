@@ -9,7 +9,7 @@ import SearchProductos from "./SearchProductos";
 import AuthContext from "@/context/AuthContext";
 import ProductosContext from "@/context/ProductosContext";
 import { AuthContextValue } from "@/types/AuthContextValue";
-import { ProductosContextValue } from "@/types/ProductosContextValue ";
+import { ProductosContextValue } from "@/types/ProductosContextValue";
 
 const HeaderProducto = () => {
   const navigate = useNavigate();

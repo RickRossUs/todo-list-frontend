@@ -1,7 +1,6 @@
 import { useContext } from "react";
 import { Box, Stack, Typography } from "@mui/material";
-import "../App.css";
-import "./Compra.css";
+import "@/assets/css/Compra.css";
 import CarritoContext from "@/context/CarritoContext";
 import { CarritoContextValue } from "@/types/CarritoContextValue";
 import ItemCarrito from "@/components/producto/ItemCarrito";
