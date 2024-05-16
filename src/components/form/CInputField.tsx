@@ -43,7 +43,7 @@ const InputField = <T extends FieldValues>({
           }
           error={!!errors[name]}
           helperText={errors[name]?.message}
-          sx={{ width: "100%" }}
+          sx={{ width: "100%", m:2 }}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">

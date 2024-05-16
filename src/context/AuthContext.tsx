@@ -21,11 +21,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   );
   const navigate = useNavigate();
 
-  const loginUsuario = async (credentials: FormData) => {
+  const loginUsuario = async (credentials: FormData, onSuccess?: () => any) => {
     const response: AxiosResponse<AuthTokens> = await fetchLogin(credentials);
-    localStorage.setItem("authTokens", JSON.stringify(response.data.token));
-    setAuthTokens(response.data.token);
-    return response.data.token;
+    if (response){
+      localStorage.setItem("authTokens", JSON.stringify(response.data.token));
+      setAuthTokens(response.data.token);
+      if (onSuccess) onSuccess()
+      return response.data.token;
+    }
   };
 
   const logoutUsuario = () => {
@@ -35,9 +38,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const contextData = {
-    authTokens: authTokens,
-    loginUsuario: loginUsuario,
-    logoutUsuario: logoutUsuario,
+    authTokens,
+    loginUsuario,
+    logoutUsuario,
   };
 
   useEffect(() => {

@@ -19,22 +19,24 @@ export const UsuarioProvider = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
 
   const getPerfil = async () => {
-    const response: AxiosResponse<Usuario> = await fetchGetMyPerfil();
-    setUser(response.data);
+    const response: AxiosResponse<Array<Usuario>> = await fetchGetMyPerfil();
+    console.log(response.data)
+    setUser(response.data[0]);
   };
 
-  const registerUser = async (usuario: FormData) => {
-    const response: AxiosResponse<Usuario> = await fetchRegisterUsuario(
-      usuario
-    );
-
-    if (response) {
+  const registerUser = async (usuario: FormData, onSuccess: (data: FormData) => any): Promise<boolean> => {
+    try {
+      const response: AxiosResponse<Usuario> = await fetchRegisterUsuario(usuario);
       setUser(response.data);
-      return true;
-    } else {
-      console.log("Something went wrong while logging in the user!");
+      if (response) {
+        onSuccess(usuario);
+        return true
+      }
+      return false;
+    } catch (error) {
+      console.error("Something went wrong while registering the user:", error);
+      return false;
     }
-    return false;
   };
 
   const updateUser = async (formData: FormData) => {
@@ -56,7 +58,7 @@ export const UsuarioProvider = ({ children }: { children: ReactNode }) => {
     return response;
   };
 
-  let contextData = {
+  let contextData: UsuariosContextValue = {
     user: user,
     setUser: setUser,
     getPerfil: getPerfil,

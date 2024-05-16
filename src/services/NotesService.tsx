@@ -1,10 +1,10 @@
 import axios from "axios";
 
-const axiosUsuarios = axios.create({
-  baseURL: import.meta.env.VITE_APP_API_URL + "/usuario/",
+const axiosNotes = axios.create({
+  baseURL: import.meta.env.VITE_APP_API_URL + "/notes/",
 });
 
-axiosUsuarios.interceptors.request.use(
+axiosNotes.interceptors.request.use(
   function (config) {
     const authTokens = localStorage.getItem("authTokens")
       ? JSON.parse(localStorage.getItem("authTokens") || "{}").access
@@ -19,30 +19,31 @@ axiosUsuarios.interceptors.request.use(
   }
 );
 
-export const fetchGetMyPerfil = () => {
-  return axiosUsuarios.get("", {
+export const fetchGetNotes = (check:string) => {
+  return axiosNotes.get("?check="+check, {
     headers: {
       "Content-Type": "application/json",
     },
   });
 };
 
-export const fetchRegisterUsuario = async (usuario: FormData) => {
-  return axiosUsuarios.post("", usuario, {
+export const fetchRegisterNotes = async (usuario: FormData) => {
+  return axiosNotes.post("", usuario, {
     headers: {
       "Content-Type": "application/json",
     },
   });
 };
 
-export const fetchUpdatePerfil = async (userId: number, formData: FormData) => {
-  return axiosUsuarios.patch(userId + "/", formData);
+export const fetchUpdateNotes = async (userId: number, formData: FormData) => {
+  return axiosNotes.patch(userId + "/", formData);
 };
 
-export const fetchDeleteUsuario = async (usuarioId: number) => {
-  return axiosUsuarios.delete(usuarioId + "/", {
+export const fetchDeleteNotes = async (usuarioId: number) => {
+  return axiosNotes.delete(usuarioId + "/", {
     headers: {
       "Content-Type": "application/json",
     },
   });
 };
+
